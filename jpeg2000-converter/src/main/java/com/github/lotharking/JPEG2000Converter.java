@@ -36,8 +36,7 @@ public class JPEG2000Converter {
             return baos.toByteArray();
 
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Conversion failed", e);
         }
     }
 }

@@ -1,0 +1,33 @@
+{
+  "name": "java-wrapper",
+  "description": "",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lotharking/jpeg2000-node"
+  },
+  "version": "0.0.1",
+  "scripts": {
+    "build": "yarn run clean && yarn run compile",
+    "clean": "rimraf -rf ./build",
+    "compile": "tsc -p tsconfig.json",
+    "prepublishOnly": "yarn run build",
+    "test": "jest --passWithNoTests"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.2",
+    "@types/node": "^18.19.79",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "jest": "^29.7.0",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.1.0",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "packageManager": "yarn@3.6.1"
+}
