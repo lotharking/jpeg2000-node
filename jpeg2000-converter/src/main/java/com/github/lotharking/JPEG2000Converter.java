@@ -2,11 +2,15 @@ package com.github.lotharking;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Base64;
+import java.util.Arrays;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.annotations.QuarkusMain;
 
+@QuarkusMain
 public class JPEG2000Converter {
 
     /**
@@ -22,7 +26,7 @@ public class JPEG2000Converter {
             // Read the input image
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
             if (image == null) {
-                throw new IOException("Failed to read image. Ensure that the format is supported.");
+                throw new IOException("Failed to read image.");
             }
 
             // Validate if the requested output format is supported
@@ -36,35 +40,42 @@ public class JPEG2000Converter {
             ImageIO.write(image, outputFormat, baos);
             return baos.toByteArray();
 
-        } catch (IOException e) {
-            throw new RuntimeException("Image conversion failed", e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Image conversion failed: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Main method to handle command-line execution.
-     * Expects a Base64-encoded image and an output format as arguments.
+     * Main method to handle execution from another process.
+     * Expects raw byte array input via standard input and an output format as an argument.
      *
-     * @param args Command-line arguments: <base64-image> <output-format>
+     * @param args Command-line arguments: <output-format>
      */
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.err.println("Usage: java -jar jpeg2000-converter.jar <base64-image> <output-format>");
+        if (args.length < 1) {
+            System.err.println("Usage: java -jar jpeg2000-converter.jar <output-format>");
             System.exit(1);
         }
 
-        String base64Image = args[0];
-        String outputFormat = args[1];
+        String outputFormat = args[0];
 
         try {
-            // Decode the Base64-encoded image
-            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            // Read input bytes from standard input
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int nRead;
+            byte[] data = new byte[16384];
+            while ((nRead = System.in.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            buffer.flush();
+            byte[] imageBytes = buffer.toByteArray();
 
             // Convert the image format
             byte[] convertedBytes = convertImageFormat(imageBytes, outputFormat);
 
-            // Print the converted image as a Base64-encoded string
-            System.out.println(Base64.getEncoder().encodeToString(convertedBytes));
+            // Write converted bytes to standard output
+            System.out.write(convertedBytes);
         } catch (Exception e) {
             System.err.println("Error during conversion: " + e.getMessage());
             System.exit(1);
