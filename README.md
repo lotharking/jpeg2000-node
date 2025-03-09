@@ -62,6 +62,28 @@ Converts a JPEG2000 image to another format.
 
 Returns a promise that resolves to `true` if the conversion is successful.  
 
-## **License**  
+## License  
 
-MIT  
+This project is **completely free for any use** and is licensed under the **MIT License**. You can find the full license text in the `LICENSE` file in this repository.  
+
+### Dependencies and Third-Party Licenses  
+
+This project wraps the **jai-imageio-jpeg2000** library, which is subject to the following licenses:  
+
+- **BSD 3-Clause License (with an additional nuclear disclaimer)**  
+  - Applies to the `com.github.jaiimageio.jpeg2000` package and build modifications (e.g., `pom.xml`, tests).  
+  - Full details are available in [`LICENSE-Sun.txt`](https://github.com/jai-imageio/jai-imageio-jpeg2000/blob/master/LICENSE-Sun.txt).  
+
+- **JJ2000 License**  
+  - Applies to the `jj2000` package within the library.  
+  - This license **is not compatible with the GNU Public License (GPL)**, and its compatibility with other open-source licenses is **uncertain**.  
+
+### Important Notes  
+
+- **License Compatibility**: Since the **JJ2000 License** has restrictions and may be incompatible with other open-source licenses, users should review it carefully before distribution or commercial use.  
+- **User Responsibility**: Developers and users should ensure they comply with the terms of all relevant licenses.  
+- **More Information**:  
+  - [`LICENSE-Sun.txt`](https://github.com/jai-imageio/jai-imageio-jpeg2000/blob/master/LICENSE-Sun.txt)  
+  - [`COPYRIGHT.md`](https://github.com/jai-imageio/jai-imageio-jpeg2000/blob/master/COPYRIGHT.md)  
+
+By including this section in your README, you make it clear that your **wrapper is free for any use** while acknowledging the **license constraints of the underlying library**. Let me know if you need further refinements! 🚀
