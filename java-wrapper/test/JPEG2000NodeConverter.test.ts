@@ -10,11 +10,9 @@ describe('JPEG2000NodeConverter', () => {
     converter = new JPEG2000NodeConverter();
   });
 
-  it('should convert test.jp2 to jpg as base64', async () => {
+  it('should convert test.jp2 to jpg', async () => {
     const inputBuffer = fs.readFileSync(inputFilePath);
-    const inputBase64 = inputBuffer.toString('base64');
-
-    const outputBuffer = await converter.convertFromJPEG2000(Buffer.from(inputBase64, 'base64'), 'jpg');
+    const outputBuffer = await converter.convertFromJPEG2000(inputBuffer, 'jpg');
     const outputBase64 = outputBuffer.toString('base64');
 
     // Validación: la salida debe ser un Base64 válido

@@ -6,7 +6,7 @@ export class JPEG2000NodeConverter {
   private jarPath: string;
 
   constructor() {
-    this.jarPath = path.join(__dirname, '..', '..', 'jpeg2000-converter', 'target', 'jpeg2000-converter-0.0.1.jar');
+    this.jarPath = path.join(__dirname, '..', '..', 'jpeg2000-converter', 'target', 'jpeg2000-converter-0.0.1-runner.jar');
   }
 
   /**
@@ -36,38 +36,44 @@ export class JPEG2000NodeConverter {
    */
   private async _convertImage(inputBuffer: Buffer, format: string): Promise<Buffer> {
     try {
-      const base64Image = inputBuffer.toString('base64');
-      const resultBase64 = await this._executeJar([base64Image, format]);
-
-      return Buffer.from(resultBase64, 'base64');
+      const convertedBuffer = await this._executeJar(inputBuffer, format);
+      return convertedBuffer;
     } catch (error) {
       console.error(`Error converting to ${format}:`, error);
       throw error;
     }
   }
-
+  
   /**
-   * Executes the Java JAR with provided arguments
-   * @param args Arguments to pass to the JAR
-   * @returns The process output as a Base64-encoded string
+   * Executes the Java JAR, passing the image buffer via stdin.
+   * @param inputBuffer The image as a Buffer
+   * @param format The desired output format (e.g., "jpg", "png")
+   * @returns The converted image as a Buffer
    */
-  private _executeJar(args: string[]): Promise<string> {
+  private _executeJar(inputBuffer: Buffer, format: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const javaProcess = spawn('java', ['-jar', this.jarPath, ...args]);
-
-      let output = '';
+      const javaProcess = spawn('java', ['-jar', this.jarPath, format]);
+  
+      let outputBuffer: Buffer[] = [];
       let errorOutput = '';
-
-      javaProcess.stdout.on('data', (data) => (output += data.toString()));
-      javaProcess.stderr.on('data', (data) => (errorOutput += data.toString()));
-
+  
+      // Capture stdout as Buffer
+      javaProcess.stdout.on('data', (data) => outputBuffer.push(data));
+  
+      // Capture stderr
+      javaProcess.stderr.on('data', (data) => errorOutput += data.toString());
+  
       javaProcess.on('close', (code) => {
         if (code !== 0) {
           reject(new Error(`Java process failed with code ${code}: ${errorOutput}`));
         } else {
-          resolve(output.trim()); // Ensure no extra newlines in Base64 output
+          resolve(Buffer.concat(outputBuffer)); // Combine all received chunks
         }
       });
+  
+      // Write image buffer to Java process and close stdin
+      javaProcess.stdin.write(inputBuffer);
+      javaProcess.stdin.end();
     });
-  }
+  }  
 }
