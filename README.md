@@ -4,7 +4,7 @@
 JPEG2000 Node Wrapper is a simple and efficient solution for converting JP2 images in TypeScript-based systems. It provides a seamless interface between Node.js and a Java-based JPEG2000 converter, leveraging Java's widespread availability in most systems to avoid additional installations.
 
 This project consists of two main components:
-1. **jpeg2000-node** (Node.js Wrapper) - A TypeScript library that exposes a user-friendly API to convert JP2 images.
+1. **JP2ToImage** (Node.js Wrapper) - A TypeScript library that exposes a user-friendly API to convert JP2 images.
 2. **core** (Java Backend) - A Java-based converter that performs the actual JP2 image processing.
 
 This approach ensures compatibility across various environments, including Docker, without requiring additional dependencies beyond Java itself.
@@ -38,9 +38,9 @@ If Java is not installed, download it from [Adoptium](https://adoptium.net/) or 
 ## Installation
 ### 1. Install the Node.js package
 ```sh
-yarn add jpeg2000-node
+yarn add JP2ToImage
 # or
-npm install jpeg2000-node
+npm install JP2ToImage
 ```
 
 ### 2. Ensure Java is available
@@ -48,7 +48,7 @@ If Java is not installed globally, set the `JAVA_HOME` path accordingly.
 
 ### 3. Import and use in TypeScript
 ```typescript
-import { JPEG2000NodeConverter } from "jpeg2000-node";
+import { JPEG2000NodeConverter } from "JP2ToImage";
 
 const converter = new JPEG2000NodeConverter();
 converter.convert("input.jp2", "output.png")
@@ -90,8 +90,8 @@ CMD ["node", "index.js"]
 
 To build and run:
 ```sh
-docker build -t jpeg2000-node .
-docker run --rm jpeg2000-node
+docker build -t JP2ToImage .
+docker run --rm JP2ToImage
 ```
 
 ---

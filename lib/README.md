@@ -1,1 +1,1 @@
-# jpeg2000-node
+# JP2ToImage
