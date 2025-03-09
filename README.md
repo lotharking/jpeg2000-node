@@ -1,66 +1,116 @@
-# **jpeg2000-node**  
+# JPEG2000 Node Wrapper
 
-A Node.js wrapper for the Java library [jai-imageio-jpeg2000](https://github.com/jai-imageio/jai-imageio-jpeg2000), enabling image conversion to and from the JPEG2000 format.  
+## Overview
+JPEG2000 Node Wrapper is a simple and efficient solution for converting JP2 images in TypeScript-based systems. It provides a seamless interface between Node.js and a Java-based JPEG2000 converter, leveraging Java's widespread availability in most systems to avoid additional installations.
 
-## **Requirements**  
+This project consists of two main components:
+1. **jpeg2000-node** (Node.js Wrapper) - A TypeScript library that exposes a user-friendly API to convert JP2 images.
+2. **core** (Java Backend) - A Java-based converter that performs the actual JP2 image processing.
 
-- Node.js (v18 or later)  
-- Java JDK (v17 or later)  
+This approach ensures compatibility across various environments, including Docker, without requiring additional dependencies beyond Java itself.
 
-## **Installation**  
+---
 
-```bash
+## Features
+✅ Easy-to-use TypeScript API for JP2 image conversion  
+✅ Works out-of-the-box with Java installed  
+✅ No need for extra dependencies in Docker environments  
+✅ Reliable and scalable solution for image processing  
+✅ Fully open-source and free for any use  
+
+---
+
+## Prerequisites
+Before using JPEG2000 Node Wrapper, ensure you have the following installed:
+
+- **Node.js** (version 16+ recommended)
+- **Java** (JDK 11+ recommended)
+- **Maven** (for building the Java component, if needed)
+
+To check if Java is installed, run:
+```sh
+java -version
+```
+If Java is not installed, download it from [Adoptium](https://adoptium.net/) or your preferred provider.
+
+---
+
+## Installation
+### 1. Install the Node.js package
+```sh
+yarn add jpeg2000-node
+# or
 npm install jpeg2000-node
 ```
 
-## **Usage**  
+### 2. Ensure Java is available
+If Java is not installed globally, set the `JAVA_HOME` path accordingly.
 
-```javascript
-const JPEG2000NodeConverter = require('jpeg2000-node');
+### 3. Import and use in TypeScript
+```typescript
+import { JPEG2000NodeConverter } from "jpeg2000-node";
 
-// Create an instance of the converter
 const converter = new JPEG2000NodeConverter();
-
-// Convert an image to JPEG2000 format
-async function convertToJP2() {
-  const success = await converter.convertToJPEG2000('input.png', 'output.jp2');
-  console.log(success ? 'Conversion successful' : 'Conversion failed');
-}
-
-// Convert a JPEG2000 image to another format
-async function convertFromJP2() {
-  const success = await converter.convertFromJPEG2000('input.jp2', 'output.png', 'png');
-  console.log(success ? 'Conversion successful' : 'Conversion failed');
-}
-
-convertToJP2();
-convertFromJP2();
+converter.convert("input.jp2", "output.png")
+  .then(() => console.log("Conversion successful!"))
+  .catch((error) => console.error("Conversion failed:", error));
 ```
 
-## **API**  
+---
 
-### `new JPEG2000NodeConverter()`
+## Usage
+### Convert a JP2 image
+```typescript
+converter.convert("input.jp2", "output.png")
+  .then(() => console.log("Image converted successfully"))
+  .catch(console.error);
+```
 
-Creates a new instance of the converter.
+### Convert with custom options
+```typescript
+converter.convert("input.jp2", "output.jpeg", { quality: 90 })
+  .then(() => console.log("JPEG image created"))
+  .catch(console.error);
+```
 
-### `convertToJPEG2000(inputPath, outputPath)`
+---
 
-Converts an image to JPEG2000 format.  
+## Docker Support
+This library is optimized for Docker environments. Since Java is already present in most base images, no additional installation is required.
 
-- `inputPath`: Path to the input image file (can be any format supported by Java ImageIO)  
-- `outputPath`: Path to the output JPEG2000 file  
+### Example Dockerfile
+```dockerfile
+FROM node:18
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install
+COPY . .
+CMD ["node", "index.js"]
+```
 
-Returns a promise that resolves to `true` if the conversion is successful.  
+To build and run:
+```sh
+docker build -t jpeg2000-node .
+docker run --rm jpeg2000-node
+```
 
-### `convertFromJPEG2000(inputPath, outputPath, format = 'png')`
+---
 
-Converts a JPEG2000 image to another format.  
+## Development
+### Build the Java Component
+If you modify the Java source code, rebuild the JAR file using Maven:
+```sh
+cd core
+mvn clean package
+```
+The compiled JAR will be available in `target/`.
 
-- `inputPath`: Path to the input JPEG2000 file  
-- `outputPath`: Path to the output image file  
-- `format`: Output format (default: "png")  
+### Run Tests
+```sh
+yarn test
+```
 
-Returns a promise that resolves to `true` if the conversion is successful.  
+---
 
 ## License  
 
