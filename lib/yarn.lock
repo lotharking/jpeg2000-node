@@ -1089,6 +1089,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"JP2ToImage@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "JP2ToImage@workspace:."
+  dependencies:
+    "@types/jest": ^29.5.2
+    "@types/node": ^18.19.79
+    "@typescript-eslint/eslint-plugin": ^7.0.1
+    "@typescript-eslint/parser": ^7.0.1
+    jest: ^29.7.0
+    rimraf: ^6.0.1
+    ts-jest: ^29.1.2
+    ts-node: ^10.9.2
+    tsconfig-paths: ^4.1.0
+    typescript: ^5.6.2
+  languageName: unknown
+  linkType: soft
+
 "abbrev@npm:^3.0.0":
   version: 3.0.0
   resolution: "abbrev@npm:3.0.0"
@@ -2279,23 +2296,6 @@ __metadata:
   checksum: f2dc4a086b4f58446d02cb9be913c39710d9ea570218d7681bb861f7eeaecab7b458256c946aeaa7e548c5e0686cc293e6435501e4047174a3b6a504dcbfcaae
   languageName: node
   linkType: hard
-
-"JP2ToImage@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "JP2ToImage@workspace:."
-  dependencies:
-    "@types/jest": ^29.5.2
-    "@types/node": ^18.19.79
-    "@typescript-eslint/eslint-plugin": ^7.0.1
-    "@typescript-eslint/parser": ^7.0.1
-    jest: ^29.7.0
-    rimraf: ^6.0.1
-    ts-jest: ^29.1.2
-    ts-node: ^10.9.2
-    tsconfig-paths: ^4.1.0
-    typescript: ^5.6.2
-  languageName: unknown
-  linkType: soft
 
 "jest-changed-files@npm:^29.7.0":
   version: 29.7.0
