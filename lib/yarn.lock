@@ -2280,9 +2280,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"java-wrapper@workspace:.":
+"jpeg2000-node@workspace:.":
   version: 0.0.0-use.local
-  resolution: "java-wrapper@workspace:."
+  resolution: "jpeg2000-node@workspace:."
   dependencies:
     "@types/jest": ^29.5.2
     "@types/node": ^18.19.79
