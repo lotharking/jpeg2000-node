@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Main-Class: com.github.lotharking.JPEG2000Converter
 Class-Path: .
-Implementation-Title: jpeg2000-converter
+Implementation-Title: core
 Implementation-Version: 0.0.1
 Implementation-Vendor: Andres Vallecilla
 Built-By: ${user.name}

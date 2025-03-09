@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.lotharking</groupId>
-  <artifactId>jpeg2000-converter</artifactId>
+  <artifactId>core</artifactId>
   <version>0.0.1</version>
   <packaging>jar</packaging>
-  <name>jpeg2000-converter</name>
+  <name>core</name>
   <url>https://github.com/lotharking/jpeg2000-node</url>
    <developers>
     <developer>

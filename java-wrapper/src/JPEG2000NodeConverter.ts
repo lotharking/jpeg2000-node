@@ -6,7 +6,7 @@ export class JPEG2000NodeConverter {
   private jarPath: string;
 
   constructor() {
-    this.jarPath = path.join(__dirname, '..', '..', 'jpeg2000-converter', 'target', 'jpeg2000-converter-0.0.1-runner.jar');
+    this.jarPath = path.join(__dirname, '..', '..', 'core', 'target', 'core-0.0.1-runner.jar');
   }
 
   /**

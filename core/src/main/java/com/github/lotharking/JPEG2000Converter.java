@@ -54,7 +54,7 @@ public class JPEG2000Converter {
      */
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.err.println("Usage: java -jar jpeg2000-converter.jar <output-format>");
+            System.err.println("Usage: java -jar core.jar <output-format>");
             System.exit(1);
         }
 
