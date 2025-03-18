@@ -1089,9 +1089,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"JP2ToImage@workspace:.":
+"jp2-to-image@workspace:.":
   version: 0.0.0-use.local
-  resolution: "JP2ToImage@workspace:."
+  resolution: "jp2-to-image@workspace:."
   dependencies:
     "@types/jest": ^29.5.2
     "@types/node": ^18.19.79

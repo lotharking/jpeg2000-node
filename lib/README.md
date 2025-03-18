@@ -1,1 +1,1 @@
-# JP2ToImage
+# jp2-to-image
