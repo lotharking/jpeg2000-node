@@ -47,6 +47,10 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-container-image-jib</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-awt</artifactId>
+    </dependency>
     
     <!-- Testing dependencies -->
     <dependency>
@@ -74,13 +78,11 @@
       <groupId>com.github.jai-imageio</groupId>
       <artifactId>jai-imageio-core</artifactId>
       <version>1.4.0</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.github.jai-imageio</groupId>
       <artifactId>jai-imageio-jpeg2000</artifactId>
       <version>1.4.0</version>
-      <scope>runtime</scope>
     </dependency>
   </dependencies>
   <build>
