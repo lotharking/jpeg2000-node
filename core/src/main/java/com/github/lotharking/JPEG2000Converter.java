@@ -69,25 +69,24 @@ public class JPEG2000Converter {
 
         String outputFormat = args[0];
 
-        try {
-            // Read input bytes from standard input
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try (BufferedInputStream bis = new BufferedInputStream(System.in);
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+             BufferedOutputStream bos = new BufferedOutputStream(System.out)) {
+
+            byte[] data = new byte[65536];
             int nRead;
-            byte[] data = new byte[16384];
-            while ((nRead = System.in.read(data, 0, data.length)) != -1) {
+            while ((nRead = bis.read(data)) != -1) {
                 buffer.write(data, 0, nRead);
             }
-            buffer.flush();
             byte[] imageBytes = buffer.toByteArray();
 
-            // Convert the image format
             byte[] convertedBytes = convertImageFormat(imageBytes, outputFormat);
-
-            // Write converted bytes to standard output
-            System.out.write(convertedBytes);
+            bos.write(convertedBytes);
+            bos.flush();
         } catch (Exception e) {
             System.err.println("Error during conversion: " + e.getMessage());
             System.exit(1);
         }
+
     }
 }
