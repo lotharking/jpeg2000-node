@@ -5,6 +5,7 @@ build
 *.txn
 logs.txt
 examples/**/afj
+bin
 
 # Yarn
 .yarn/cache
