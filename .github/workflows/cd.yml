@@ -34,7 +34,7 @@ jobs:
     - name: Build with Maven (Native)
       run: |
         cd core
-        mvn clean package -Pnative -Dnative-image.docker-build=true -Dquarkus.package.output-directory=target
+        mvn clean package -Pnative -Dquarkus.package.output-directory=target/
     
     - name: Create bin directory and copy artifacts
       run: |
