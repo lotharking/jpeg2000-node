@@ -14,7 +14,7 @@ const config: Config.InitialOptions = {
       },
     ],
   },
-  roots: ['<rootDir>']
+  roots: ['<rootDir>'],
 }
 
 export default config

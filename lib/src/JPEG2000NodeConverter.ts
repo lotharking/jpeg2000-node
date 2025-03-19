@@ -1,12 +1,11 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { spawn } from 'child_process';
+import { spawn } from 'child_process'
+import * as path from 'path'
 
 export class JPEG2000NodeConverter {
-  private jarPath: string;
+  private jarPath: string
 
   constructor() {
-    this.jarPath = path.join(__dirname, '..', 'bin', 'core-0.0.1-runner');
+    this.jarPath = path.join(__dirname, '..', 'bin', 'core-0.0.1-runner')
   }
 
   /**
@@ -15,7 +14,7 @@ export class JPEG2000NodeConverter {
    * @returns Converted image as a buffer
    */
   async convertToJPEG2000(inputBuffer: Buffer): Promise<Buffer> {
-    return this._convertImage(inputBuffer, 'jp2');
+    return this._convertImage(inputBuffer, 'jp2')
   }
 
   /**
@@ -25,7 +24,7 @@ export class JPEG2000NodeConverter {
    * @returns Converted image as a buffer
    */
   async convertFromJPEG2000(inputBuffer: Buffer, format: string = 'png'): Promise<Buffer> {
-    return this._convertImage(inputBuffer, format);
+    return this._convertImage(inputBuffer, format)
   }
 
   /**
@@ -36,14 +35,14 @@ export class JPEG2000NodeConverter {
    */
   private async _convertImage(inputBuffer: Buffer, format: string): Promise<Buffer> {
     try {
-      const convertedBuffer = await this._executeJar(inputBuffer, format);
-      return convertedBuffer;
+      const convertedBuffer = await this._executeJar(inputBuffer, format)
+      return convertedBuffer
     } catch (error) {
-      console.error(`Error converting to ${format}:`, error);
-      throw error;
+      console.error(`Error converting to ${format}:`, error)
+      throw error
     }
   }
-  
+
   /**
    * Executes the Java JAR, passing the image buffer via stdin.
    * @param inputBuffer The image as a Buffer
@@ -52,28 +51,28 @@ export class JPEG2000NodeConverter {
    */
   private _executeJar(inputBuffer: Buffer, format: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const javaProcess = spawn(this.jarPath, [format]);
-  
-      let outputBuffer: Buffer[] = [];
-      let errorOutput = '';
-  
+      const javaProcess = spawn(this.jarPath, [format])
+
+      const outputBuffer: Buffer[] = []
+      let errorOutput = ''
+
       // Capture stdout as Buffer
-      javaProcess.stdout.on('data', (data) => outputBuffer.push(data));
-  
+      javaProcess.stdout.on('data', data => outputBuffer.push(data))
+
       // Capture stderr
-      javaProcess.stderr.on('data', (data) => errorOutput += data.toString());
-  
-      javaProcess.on('close', (code) => {
+      javaProcess.stderr.on('data', data => (errorOutput += data.toString()))
+
+      javaProcess.on('close', code => {
         if (code !== 0) {
-          reject(new Error(`Java process failed with code ${code}: ${errorOutput}`));
+          reject(new Error(`Java process failed with code ${code}: ${errorOutput}`))
         } else {
-          resolve(Buffer.concat(outputBuffer)); // Combine all received chunks
+          resolve(Buffer.concat(outputBuffer)) // Combine all received chunks
         }
-      });
-  
+      })
+
       // Write image buffer to Java process and close stdin
-      javaProcess.stdin.write(inputBuffer);
-      javaProcess.stdin.end();
-    });
-  }  
+      javaProcess.stdin.write(inputBuffer)
+      javaProcess.stdin.end()
+    })
+  }
 }
