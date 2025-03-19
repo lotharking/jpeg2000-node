@@ -15,7 +15,6 @@ describe('JPEG2000NodeConverter', () => {
     const outputBuffer = await converter.convertFromJPEG2000(inputBuffer, 'jpg');
     const outputBase64 = outputBuffer.toString('base64');
 
-    // Validación: la salida debe ser un Base64 válido
     expect(outputBase64).toMatch(/^([A-Za-z0-9+/=]+)$/);
     expect(outputBase64.length).toBeGreaterThan(0);
   });

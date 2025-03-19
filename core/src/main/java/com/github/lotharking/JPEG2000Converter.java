@@ -2,9 +2,7 @@ package com.github.lotharking;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.IIORegistry;
@@ -83,11 +81,6 @@ public class JPEG2000Converter {
             byte[] imageBytes = buffer.toByteArray();
 
             // Convert the image format
-            System.err.println("Available reader formats: " + 
-            Arrays.stream(ImageIO.getReaderFormatNames())
-                .distinct()
-                .collect(Collectors.joining(", ")));
-        
             byte[] convertedBytes = convertImageFormat(imageBytes, outputFormat);
 
             // Write converted bytes to standard output

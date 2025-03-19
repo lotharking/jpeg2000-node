@@ -6,7 +6,7 @@ export class JPEG2000NodeConverter {
   private jarPath: string;
 
   constructor() {
-    this.jarPath = path.join(__dirname, '..', '..', 'core', 'target', 'core-0.0.1-runner.jar');
+    this.jarPath = path.join(__dirname, '..', '..', 'core', 'target', 'core-0.0.1-runner');
   }
 
   /**
@@ -52,7 +52,7 @@ export class JPEG2000NodeConverter {
    */
   private _executeJar(inputBuffer: Buffer, format: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const javaProcess = spawn('java', ['-jar', this.jarPath, format]);
+      const javaProcess = spawn(this.jarPath, [format]);
   
       let outputBuffer: Buffer[] = [];
       let errorOutput = '';
