@@ -34,7 +34,7 @@ jobs:
     - name: Build with Maven (Native)
       run: |
         cd core
-        mvn clean package -Pnative -Dquarkus.package.output-directory=target/
+        mvn clean package -Pnative -Dquarkus.package.output-directory=
     
     - name: Create bin directory and copy artifacts
       run: |
