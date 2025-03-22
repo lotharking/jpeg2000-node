@@ -25,7 +25,7 @@ jobs:
       - name: Enable Yarn 3.6.1
         run: |
           corepack enable
-          corepack prepare yarn@3.6.1 --activate
+          yarn set version 3.6.1
           yarn --version
           
       - name: Install dependencies
