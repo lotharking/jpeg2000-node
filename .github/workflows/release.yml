@@ -43,10 +43,6 @@ jobs:
       with:
         name: quarkus-native-package
         path: bin/
-        workflow: Quarkus Native Build
-        workflow_conclusion: success
-        repository: ${{ github.repository }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Setup Node.js for NPM Publishing
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
