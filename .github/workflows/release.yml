@@ -2,9 +2,11 @@ name: Release to NPM
 on:
   workflow_run:
     workflows: ["Quarkus Native Build"]
-    types:
-      - completed
-    branches: [main]
+    types: [completed]
+  pull_request:
+    types: [closed]
+    branches:
+      - main
 
 permissions:
   contents: write
