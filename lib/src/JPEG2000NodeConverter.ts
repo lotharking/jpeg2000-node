@@ -5,7 +5,7 @@ export class JPEG2000NodeConverter {
   private jarPath: string
 
   constructor() {
-    this.jarPath = path.join(__dirname, '..', 'bin', 'core-0.0.1-runner')
+    this.jarPath = path.join(__dirname, 'bin', 'core-0.0.1-runner')
   }
 
   /**
