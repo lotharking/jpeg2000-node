@@ -104,6 +104,7 @@ jobs:
         cd lib
         yarn install --immutable
         yarn build
+        rm -rf bin/
         echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
         yarn config set npmAuthToken ${NPM_AUTH_TOKEN}
         yarn npm publish --access public
