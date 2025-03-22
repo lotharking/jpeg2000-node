@@ -3,9 +3,10 @@ on:
   workflow_run:
     workflows: ["Quarkus Native Build"]
     types: [completed]
-    status: [success]
-  push:
-    branches: [ main ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
 
 permissions:
   contents: write
