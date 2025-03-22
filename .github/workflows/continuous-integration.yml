@@ -16,12 +16,10 @@ jobs:
       - name: Checkout jp2-to-image
         uses: actions/checkout@v4
 
-      - name: Setup Node.js v20 with Yarn 3.6.1
+      - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn'
-          cache-dependency-path: 'lib/yarn.lock'
           
       - name: Install dependencies
         run: |
