@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build and Package
-    if: ${{ !contains(github.event.head_commit.message, 'chore(main):') }}
+    if: ${{ contains(github.event.head_commit.message, 'chore(main):') }}
     runs-on: ubuntu-latest
     
     steps:
@@ -34,15 +34,14 @@ jobs:
         cd core
         mvn clean package -Pnative -Dquarkus.package.output-directory=
     
-    - name: Create bin directory and copy artifacts
+    - name: Prepare artifacts
       run: |
         mkdir -p bin
         cp core/target/*-runner bin/
         cp -r core/target/lib bin/ || echo "No lib directory found"
         cp -r core/target/quarkus-app bin/ || echo "No quarkus-app directory found"
-    
-    - name: Clean up unnecessary files
-      run: |
+        
+        # Clean up unnecessary files
         rm -rf core/target/*.jar || true
         rm -rf core/target/*.original || true
         rm -rf core/target/classes || true
@@ -53,3 +52,51 @@ jobs:
       with:
         name: quarkus-native-package
         path: bin/
+
+  release:
+    name: Process Release
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Process Release Please
+      uses: googleapis/release-please-action@v4
+      id: release-please
+      with:
+        config-file: release-please-config.json
+        manifest-file: .release-please-manifest.json
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Print release outputs for debugging
+      continue-on-error: true
+      run: |
+        echo "Release outputs:"
+        echo "${{ toJson(steps.release-please.outputs) }}"
+
+    - name: Download build artifacts
+      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: quarkus-native-package
+        path: bin/
+
+    - name: Setup Node.js for NPM Publishing
+      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        registry-url: 'https://registry.npmjs.org'
+        
+    - name: Publish to NPM
+      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+      run: |
+        cd lib
+        yarn install --immutable
+        yarn npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
