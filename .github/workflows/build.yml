@@ -87,10 +87,16 @@ jobs:
 
     - name: Setup Node.js for NPM Publishing
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: 20
         registry-url: 'https://registry.npmjs.org'
+
+    - name: Enable Corepack and Setup Yarn
+      run: |
+        corepack enable
+        corepack prepare yarn@3.6.1 --activate
+        yarn --version
         
     - name: Publish to NPM
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
