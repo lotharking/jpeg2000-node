@@ -21,7 +21,7 @@
     "prettier": "prettier '**/*.+(js|json|ts|tsx|md|yml|yaml)'",
     "format": "yarn prettier --write",
     "check-format": "yarn prettier --list-different",
-    "build": "yarn run clean && yarn run compile && cpx src/bin/**/* build/src/bin",
+    "build": "yarn run clean && yarn run compile && cpx src/bin/**/* build/bin",
     "clean": "rimraf -rf ./build",
     "compile": "tsc -p tsconfig.json",
     "prepublishOnly": "yarn run build",
