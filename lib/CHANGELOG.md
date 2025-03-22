@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.2](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.1...jp2-to-image@v0.0.2) (2025-03-22)
+## 0.0.1 (2025-03-22)
 
 
 ### Features
