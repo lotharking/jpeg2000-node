@@ -19,7 +19,7 @@
     "prettier": "prettier '**/*.+(js|json|ts|tsx|md|yml|yaml)'",
     "format": "yarn prettier --write",
     "check-format": "yarn prettier --list-different",
-    "build": "yarn run clean && yarn run compile",
+    "build": "yarn run clean && yarn run compile && cpx bin/**/* build/bin",
     "clean": "rimraf -rf ./build",
     "compile": "tsc -p tsconfig.json",
     "prepublishOnly": "yarn run build",
@@ -33,11 +33,16 @@
     "conversion",
     "jp2"
   ],
+  "files": [
+    "build",
+    "bin"
+  ],
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^18.19.79",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "cpx": "^1.5.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-typescript": "^3.6.1",

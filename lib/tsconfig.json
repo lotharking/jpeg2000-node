@@ -21,5 +21,6 @@
     "require": ["tsconfig-paths/register"],
     "files": true
   },
+  "include": ["src", "bin"],
   "exclude": ["node_modules", "build", "**/build/**"]
 }
