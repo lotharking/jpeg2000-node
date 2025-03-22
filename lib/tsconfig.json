@@ -7,7 +7,7 @@
     "strict": true,
     "noEmitOnError": true,
     "lib": ["ES2017"],
-    "types": ["jest", "node"], 
+    "types": ["jest", "node"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

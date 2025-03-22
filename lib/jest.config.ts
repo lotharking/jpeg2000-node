@@ -5,8 +5,8 @@ const config: Config.InitialOptions = {
   testEnvironment: 'node',
   globals: {
     'ts-jest': {
-      tsconfig: 'tsconfig.test.json'
-    }
+      tsconfig: 'tsconfig.test.json',
+    },
   },
   coveragePathIgnorePatterns: ['/build/', '/node_modules/', '/__tests__/', 'tests'],
   coverageDirectory: '<rootDir>/coverage/',
