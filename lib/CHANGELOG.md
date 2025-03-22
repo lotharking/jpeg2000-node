@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.3...jp2-to-image@v0.0.4) (2025-03-22)
+
+
+### Bug Fixes
+
+* reduce size library ([#28](https://github.com/lotharking/jpeg2000-node/issues/28)) ([502fc19](https://github.com/lotharking/jpeg2000-node/commit/502fc19baa829bce90027d614e906c3b745f6300))
+
 ## [0.0.3](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.2...jp2-to-image@v0.0.3) (2025-03-22)
 
 
