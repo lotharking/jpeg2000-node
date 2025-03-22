@@ -1,0 +1,48 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout jp2-to-image
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack and Setup Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.1 --activate
+          yarn --version
+  
+      - name: Install dependencies
+        run: |
+          cd lib
+          yarn install --immutable
+
+      - name: Build
+        run: |
+          cd lib
+          yarn build
+
+      - name: Check Format
+        run: |
+          cd lib
+          yarn check-format
+
+      - name: Check Types
+        run: |
+          cd lib
+          yarn check-types

@@ -6,8 +6,8 @@
     "sourceMap": true,
     "strict": true,
     "noEmitOnError": true,
-    "lib": [],
-    "types": [],
+    "lib": ["ES2017"],
+    "types": ["jest", "node"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
@@ -17,10 +17,6 @@
     // TODO: we should update code to assume errors are of type 'unknown'
     "useUnknownInCatchVariables": false
   },
-  "exclude": [
-    "node_modules",
-    "build",
-    "**/build/**"
-  ],
+  "exclude": ["node_modules", "build", "**/build/**"],
   "include": ["./jest.config.ts", "tests"]
 }

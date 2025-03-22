@@ -6,8 +6,8 @@
     "sourceMap": true,
     "strict": true,
     "noEmitOnError": true,
-    "lib": [],
-    "types": [],
+    "lib": ["ES2017"],
+    "types": ["jest", "node"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
@@ -15,17 +15,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "build",
-    // TODO: we should update code to assume errors are of type 'unknown'
     "useUnknownInCatchVariables": false
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"],
     "files": true
   },
-  "types": ["jest", "node"],
-  "exclude": [
-    "node_modules",
-    "build",
-    "**/build/**"
-  ]
+  "exclude": ["node_modules", "build", "**/build/**"]
 }

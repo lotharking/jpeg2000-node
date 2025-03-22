@@ -1,7 +1,12 @@
 {
   "name": "jp2-to-image",
-  "description": "",
-  "homepage": "",
+  "description": "A library for converting JPEG 2000 (JP2) images to other formats",
+  "homepage": "https://github.com/lotharking/jpeg2000-node",
+  "author": {
+    "name": "Andres Vallecilla",
+    "email": "andresfelipe083195@hotmail.com"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/lotharking/jpeg2000-node"
@@ -29,7 +34,7 @@
     "jp2"
   ],
   "devDependencies": {
-    "@types/jest": "^29.5.2",
+    "@types/jest": "^29.5.14",
     "@types/node": "^18.19.79",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
