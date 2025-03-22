@@ -34,31 +34,6 @@ java --version
 If Java is not installed, download it from [Adoptium](https://adoptium.net/) or your preferred provider.
 
 ---
-
-## Installation
-### 1. Install the Node.js package
-```sh
-yarn add jp2-to-image
-# or
-npm install jp2-to-image
-```
-
-### 2. Ensure Java is available
-If Java is not installed globally, set the `JAVA_HOME` path accordingly.
-
-### 3. Import and use in TypeScript
-```typescript
-import { JPEG2000NodeConverter } from "jp2-to-image";
-
-const converter = new JPEG2000NodeConverter();
-try {
-  await converter.convert(inputBuffer, "png");
-  console.log("Conversion successful!");
-} catch (error) {
-  console.error("Conversion failed:", error);
-}
-```
----
 ## Development
 ### Build the Java Component
 If you modify the Java source code, rebuild the JAR file using Maven:

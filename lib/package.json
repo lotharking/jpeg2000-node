@@ -1,5 +1,7 @@
 {
   "name": "jp2-to-image",
+  "main": "build/index",
+  "types": "build/index",
   "description": "A library for converting JPEG 2000 (JP2) images to other formats",
   "homepage": "https://github.com/lotharking/jpeg2000-node",
   "author": {
@@ -37,6 +39,9 @@
     "build",
     "bin"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^18.19.79",
