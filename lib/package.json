@@ -21,7 +21,7 @@
     "prettier": "prettier '**/*.+(js|json|ts|tsx|md|yml|yaml)'",
     "format": "yarn prettier --write",
     "check-format": "yarn prettier --list-different",
-    "build": "yarn run clean && yarn run compile",
+    "build": "yarn run clean && yarn run compile && cpx src/bin/**/* build/src/bin",
     "clean": "rimraf -rf ./build",
     "compile": "tsc -p tsconfig.json",
     "prepublishOnly": "yarn run build",
@@ -63,5 +63,8 @@
   "engines": {
     "node": ">= 18"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.1",
+  "dependencies": {
+    "cpx": "^1.5.0"
+  }
 }
