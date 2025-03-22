@@ -1049,7 +1049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.5.2":
+"@types/jest@npm:^29.5.14":
   version: 29.5.14
   resolution: "@types/jest@npm:29.5.14"
   dependencies:
@@ -4017,7 +4017,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "jp2-to-image@workspace:."
   dependencies:
-    "@types/jest": ^29.5.2
+    "@types/jest": ^29.5.14
     "@types/node": ^18.19.79
     "@typescript-eslint/eslint-plugin": ^6.0.0
     "@typescript-eslint/parser": ^6.0.0
