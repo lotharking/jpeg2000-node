@@ -16,10 +16,17 @@ jobs:
       - name: Checkout jp2-to-image
         uses: actions/checkout@v4
 
-      - name: Setup node v20
+      - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'yarn'
+
+      - name: Enable Yarn 3.6.1
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.1 --activate
+          yarn --version
           
       - name: Install dependencies
         run: |
