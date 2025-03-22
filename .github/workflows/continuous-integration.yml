@@ -16,20 +16,12 @@ jobs:
       - name: Checkout jp2-to-image
         uses: actions/checkout@v4
 
-      - name: Enable Corepack (for Yarn 3+)
-        run: |
-          sudo corepack enable
-
       - name: Setup Node.js v20 with Yarn 3.6.1
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'
-
-      - name: Enable Yarn 3.6.1
-        run: |
-          yarn set version 3.6.1
-          yarn --version
+          yarn-version: 3.6.1
           
       - name: Install dependencies
         run: |
