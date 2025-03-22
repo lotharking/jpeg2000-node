@@ -15,6 +15,7 @@
 * custom package json ([0927a67](https://github.com/lotharking/jpeg2000-node/commit/0927a679d8b9b91d24af6fa273b796b10815b7a3))
 * format ([063c2c1](https://github.com/lotharking/jpeg2000-node/commit/063c2c17b1d5147435f7d836e884ee4003711136))
 * move directory ([4fae074](https://github.com/lotharking/jpeg2000-node/commit/4fae074f253fd00d06fb3e8e64b105c34bf82db8))
+* test ([82fcfae](https://github.com/lotharking/jpeg2000-node/commit/82fcfae9216596cbd68c91e62bb039e630ca3c12))
 * test ([4909b65](https://github.com/lotharking/jpeg2000-node/commit/4909b65d7bd612c407be2dc4556612f1fa144780))
 * test ([ca4ec7f](https://github.com/lotharking/jpeg2000-node/commit/ca4ec7f7b90a3f375bc9cd8577ee9f763ffcf76d))
 * test ([1ca950e](https://github.com/lotharking/jpeg2000-node/commit/1ca950e81b612e49f19a7d9a79a8c661c5cde9ff))
