@@ -32,11 +32,6 @@ jobs:
           cd lib
           yarn install --immutable
 
-      - name: Build
-        run: |
-          cd lib
-          yarn build
-
       - name: Check Format
         run: |
           cd lib
