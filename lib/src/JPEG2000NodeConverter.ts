@@ -1,11 +1,26 @@
 import { spawn } from 'child_process'
+import * as fs from 'fs'
 import * as path from 'path'
 
 export class JPEG2000NodeConverter {
   private jarPath: string
 
   constructor() {
-    this.jarPath = path.join(__dirname, 'bin', 'core-0.0.1-runner')
+    const localPath = path.join(__dirname, 'bin', 'core-0.0.1-runner')
+    let modulePath: string | null = null
+
+    try {
+      const packageRoot = path.dirname(require.resolve('jp2-to-image/package.json')) // package name
+      modulePath = path.join(packageRoot, 'bin', 'core-0.0.1-runner')
+    } catch (error) {
+      modulePath = null
+    }
+
+    if (modulePath && fs.existsSync(modulePath)) {
+      this.jarPath = modulePath
+    } else {
+      this.jarPath = localPath
+    }
   }
 
   /**
