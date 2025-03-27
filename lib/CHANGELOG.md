@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.6...jp2-to-image@v0.0.7) (2025-03-27)
+
+
+### Bug Fixes
+
+* error on deployment ([#34](https://github.com/lotharking/jpeg2000-node/issues/34)) ([bf69d2a](https://github.com/lotharking/jpeg2000-node/commit/bf69d2a32111461d3262fa06e0febd8fff660408))
+
 ## [0.0.6](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.5...jp2-to-image@v0.0.6) (2025-03-27)
 
 
