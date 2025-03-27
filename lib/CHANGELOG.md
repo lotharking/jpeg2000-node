@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.5...jp2-to-image@v0.0.6) (2025-03-27)
+
+
+### Bug Fixes
+
+* error on search bin files ([#32](https://github.com/lotharking/jpeg2000-node/issues/32)) ([98abb94](https://github.com/lotharking/jpeg2000-node/commit/98abb94d1886209639f9f271ac7b5651cdb1a43a))
+
 ## [0.0.5](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.4...jp2-to-image@v0.0.5) (2025-03-22)
 
 
