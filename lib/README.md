@@ -12,18 +12,14 @@ yarn add jp2-to-image
 npm install jp2-to-image
 ```
 
-### 2. Ensure Java is available
-
-If Java is not installed globally, set the `JAVA_HOME` path accordingly.
-
-### 3. Import and use in TypeScript
+### 2. Import and use in TypeScript
 
 ```typescript
 import { JPEG2000NodeConverter } from 'jp2-to-image'
 
 const converter = new JPEG2000NodeConverter()
 try {
-  await converter.convert(inputBuffer, 'png')
+  await converter.convertFromJPEG2000(inputBuffer, 'png') // Return a buffer
   console.log('Conversion successful!')
 } catch (error) {
   console.error('Conversion failed:', error)
