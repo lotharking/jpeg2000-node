@@ -3,21 +3,32 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 function getJarPath(): string {
-  const localPath = path.join(__dirname, 'bin', 'core-0.0.1-runner')
-  let modulePath: string | null = null
+  const fileName = 'core-0.0.1-runner'
+  let searchDir: string | undefined
 
   try {
-    const packageRoot = path.dirname(require.resolve('jp2-to-image/package.json'))
-    modulePath = path.join(packageRoot, 'bin', 'core-0.0.1-runner')
+    searchDir = path.dirname(require.resolve('jp2-to-image/package.json'))
   } catch {
-    modulePath = null
+    searchDir = undefined
   }
 
-  if (modulePath && fs.existsSync(modulePath)) {
-    return modulePath
-  } else {
-    return localPath
+  while (searchDir) {
+    const candidate = path.join(searchDir, 'bin', fileName)
+    if (fs.existsSync(candidate)) {
+      return candidate
+    }
+
+    const parent = path.dirname(searchDir)
+    if (parent === searchDir) break
+    searchDir = parent
   }
+
+  const localFallback = path.join(__dirname, 'bin', fileName)
+  if (fs.existsSync(localFallback)) {
+    return localFallback
+  }
+
+  throw new Error(`Executable '${fileName}' not found in any bin/ directory.`)
 }
 
 /**
