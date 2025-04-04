@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.9](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.8...jp2-to-image@v0.0.9) (2025-04-04)
+
+
+### Features
+
+* migrate class to function ([#39](https://github.com/lotharking/jpeg2000-node/issues/39)) ([6f65061](https://github.com/lotharking/jpeg2000-node/commit/6f65061026359e9bbdddcf5a15c7a5f4c550bd55))
+
 ## [0.0.8](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.7...jp2-to-image@v0.0.8) (2025-03-27)
 
 
