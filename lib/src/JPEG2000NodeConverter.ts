@@ -31,7 +31,6 @@ function getJarPath(): string {
   throw new Error(`Executable '${fileName}' not found in any bin/ directory.`)
 }
 
-
 /**
  * Converts an image buffer to JPEG2000 format
  * @param inputBuffer Image data as a buffer
