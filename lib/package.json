@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/lotharking/jpeg2000-node"
   },
-  "version": "0.0.9",
+  "version": "0.0.10",
   "scripts": {
     "check-types": "yarn check-types:build && yarn check-types:tests",
     "check-types:tests": "tsc -p tsconfig.test.json --noEmit",
