@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.11](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.10...jp2-to-image@v0.0.11) (2025-04-04)
+
+
+### Bug Fixes
+
+* reestructure search files ([#43](https://github.com/lotharking/jpeg2000-node/issues/43)) ([35d4df6](https://github.com/lotharking/jpeg2000-node/commit/35d4df6ca916dc6a164b4c5f998e39f9a7213c31))
+
 ## [0.0.10](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.9...jp2-to-image@v0.0.10) (2025-04-04)
 
 
