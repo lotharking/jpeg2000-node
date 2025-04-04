@@ -15,11 +15,10 @@ npm install jp2-to-image
 ### 2. Import and use in TypeScript
 
 ```typescript
-import { JPEG2000NodeConverter } from 'jp2-to-image'
+import { convertFromJPEG2000 } from 'jp2-to-image'
 
-const converter = new JPEG2000NodeConverter()
 try {
-  await converter.convertFromJPEG2000(inputBuffer, 'png') // Return a buffer
+  await convertFromJPEG2000(inputBuffer, 'png') // Return a buffer
   console.log('Conversion successful!')
 } catch (error) {
   console.error('Conversion failed:', error)

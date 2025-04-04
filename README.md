@@ -39,7 +39,7 @@ If Java is not installed, download it from [Adoptium](https://adoptium.net/) or 
 If you modify the Java source code, rebuild the JAR file using Maven:
 ```sh
 cd core/
-mvn clean packageq -Pnative
+mvn clean package -Pnative
 ```
 The compiled JAR will be available in `target/`.
 
