@@ -6,7 +6,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-// --- Callbacks de OpenJPEG ---
+// --- OpenJPEG Callbacks ---
 void error_callback(const char *msg, void *client_data) {
     (void)client_data;
     fprintf(stderr, "[ERROR] %s\n", msg);
@@ -14,7 +14,7 @@ void error_callback(const char *msg, void *client_data) {
 
 void warning_callback(const char *msg, void *client_data) {
     (void)client_data;
-    fprintf(stderr, "[ADVERTENCIA] %s\n", msg);
+    fprintf(stderr, "[WARNING] %s\n", msg);
 }
 
 void info_callback(const char *msg, void *client_data) {
@@ -24,15 +24,28 @@ void info_callback(const char *msg, void *client_data) {
 
 int main(int argc, char *argv[]) {
     const char* input_filename = "test.jp2";
-    const char* output_filename = "output.jpg";
+    std::string output_filename = "output.jpg";
+    const char* format = "jpg";  // Default format
 
     if (argc > 1) input_filename = argv[1];
-    if (argc > 2) output_filename = argv[2];
+    if (argc > 2) {
+        format = argv[2];
+        output_filename = "output." + std::string(argv[2]);
+    }
 
-    // --- Leer archivo JP2 en memoria ---
+    // Validate supported format
+    if (strcmp(format, "png") != 0 &&
+        strcmp(format, "bmp") != 0 &&
+        strcmp(format, "jpg") != 0 &&
+        strcmp(format, "jpeg") != 0) {
+        fprintf(stderr, "Error: Unsupported format: %s\nSupported formats: png, bmp, jpg\n", format);
+        return 1;
+    }
+    
+    // --- Read JP2 file into memory ---
     FILE* f = fopen(input_filename, "rb");
     if (!f) {
-        fprintf(stderr, "No se pudo abrir el archivo: %s\n", input_filename);
+        fprintf(stderr, "Could not open file: %s\n", input_filename);
         return 1;
     }
 
@@ -42,7 +55,7 @@ int main(int argc, char *argv[]) {
 
     unsigned char* buffer = malloc(size);
     if (!buffer) {
-        fprintf(stderr, "Error: No se pudo asignar memoria para el buffer\n");
+        fprintf(stderr, "Error: Could not allocate memory for buffer\n");
         fclose(f);
         return 1;
     }
@@ -50,15 +63,15 @@ int main(int argc, char *argv[]) {
     size_t read_bytes = fread(buffer, 1, size, f);
     fclose(f);
     if (read_bytes != size) {
-        fprintf(stderr, "Error: No se pudo leer el archivo completo\n");
+        fprintf(stderr, "Error: Could not read the entire file\n");
         free(buffer);
         return 1;
     }
 
-    // --- Inicializar OpenJPEG ---
+    // --- Initialize OpenJPEG ---
     opj_codec_t* codec = opj_create_decompress(OPJ_CODEC_JP2);
     if (!codec) {
-        fprintf(stderr, "Error: No se pudo crear el decodificador\n");
+        fprintf(stderr, "Error: Could not create decoder\n");
         free(buffer);
         return 1;
     }
@@ -71,7 +84,7 @@ int main(int argc, char *argv[]) {
     opj_set_default_decoder_parameters(&parameters);
 
     if (!opj_setup_decoder(codec, &parameters)) {
-        fprintf(stderr, "Error al preparar el decodificador\n");
+        fprintf(stderr, "Error setting up decoder\n");
         opj_destroy_codec(codec);
         free(buffer);
         return 1;
@@ -79,7 +92,7 @@ int main(int argc, char *argv[]) {
 
     opj_stream_t* stream = opj_stream_create_default_file_stream(input_filename, OPJ_TRUE);
     if (!stream) {
-        fprintf(stderr, "Error al crear el stream\n");
+        fprintf(stderr, "Error creating stream\n");
         opj_destroy_codec(codec);
         free(buffer);
         return 1;
@@ -89,7 +102,7 @@ int main(int argc, char *argv[]) {
     if (!opj_read_header(stream, codec, &image) ||
         !opj_decode(codec, stream, image) ||
         !opj_end_decompress(codec, stream)) {
-        fprintf(stderr, "Error al procesar la imagen\n");
+        fprintf(stderr, "Error processing image\n");
         opj_image_destroy(image);
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
@@ -97,9 +110,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // --- Validación y conversión a RGB ---
+    // --- Validation and conversion to RGB ---
     if (image->numcomps < 3) {
-        fprintf(stderr, "Error: La imagen debe tener al menos 3 componentes (RGB)\n");
+        fprintf(stderr, "Error: Image must have at least 3 components (RGB)\n");
         opj_image_destroy(image);
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
@@ -112,7 +125,7 @@ int main(int argc, char *argv[]) {
 
     for (int i = 1; i < 3; i++) {
         if (image->comps[i].w != width || image->comps[i].h != height) {
-            fprintf(stderr, "Error: Las componentes tienen diferentes dimensiones\n");
+            fprintf(stderr, "Error: Components have different dimensions\n");
             opj_image_destroy(image);
             opj_stream_destroy(stream);
             opj_destroy_codec(codec);
@@ -123,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     unsigned char* rgb = malloc(width * height * 3);
     if (!rgb) {
-        fprintf(stderr, "Error: No se pudo asignar memoria para la imagen RGB\n");
+        fprintf(stderr, "Error: Could not allocate memory for RGB image\n");
         opj_image_destroy(image);
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
@@ -148,14 +161,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // --- Guardar como PNG usando stb_image_write ---
-    if (!stbi_write_png(output_filename, width, height, 3, rgb, width * 3)) {
-        fprintf(stderr, "Error al escribir la imagen PNG\n");
+    // --- Save as PNG using stb_image_write ---
+    if (!stbi_write_png(output_filename.c_str(), width, height, 3, rgb, width * 3)) {
+        fprintf(stderr, "Error writing PNG image\n");
     } else {
-        printf("Imagen convertida exitosamente: %s\n", output_filename);
+        printf("Image successfully converted: %s\n", output_filename.c_str());
     }
 
-    // --- Limpieza ---
+    // --- Cleanup ---
     free(rgb);
     opj_image_destroy(image);
     opj_stream_destroy(stream);
