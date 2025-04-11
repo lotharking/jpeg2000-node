@@ -24,14 +24,15 @@ void info_callback(const char *msg, void *client_data) {
 
 int main(int argc, char *argv[]) {
     const char* input_filename = "test.jp2";
-    std::string output_filename = "output.jpg";
     const char* format = "jpg";  // Default format
 
     if (argc > 1) input_filename = argv[1];
     if (argc > 2) {
         format = argv[2];
-        output_filename = "output." + std::string(argv[2]);
     }
+    char output_filename[100];
+    snprintf(output_filename, sizeof(output_filename), "output.%s", format);
+
 
     // Validate supported format
     if (strcmp(format, "png") != 0 &&
@@ -162,10 +163,10 @@ int main(int argc, char *argv[]) {
     }
 
     // --- Save as PNG using stb_image_write ---
-    if (!stbi_write_png(output_filename.c_str(), width, height, 3, rgb, width * 3)) {
+    if (!stbi_write_png(output_filename, width, height, 3, rgb, width * 3)) {
         fprintf(stderr, "Error writing PNG image\n");
     } else {
-        printf("Image successfully converted: %s\n", output_filename.c_str());
+        printf("Image successfully converted: %s\n", output_filename);
     }
 
     // --- Cleanup ---
