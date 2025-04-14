@@ -3,23 +3,23 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 export class JPEG2000NodeConverter {
-  private jarPath: string
+  private binPath: string
 
   constructor() {
-    const localPath = path.join(__dirname, 'bin', 'core-0.0.1-runner')
+    const localPath = path.join(__dirname, 'bin', 'convert')
     let modulePath: string | null = null
 
     try {
       const packageRoot = path.dirname(require.resolve('jp2-to-image/package.json')) // package name
-      modulePath = path.join(packageRoot, 'bin', 'core-0.0.1-runner')
+      modulePath = path.join(packageRoot, 'bin', 'convert')
     } catch (error) {
       modulePath = null
     }
 
     if (modulePath && fs.existsSync(modulePath)) {
-      this.jarPath = modulePath
+      this.binPath = modulePath
     } else {
-      this.jarPath = localPath
+      this.binPath = localPath
     }
   }
 
@@ -66,7 +66,7 @@ export class JPEG2000NodeConverter {
    */
   private _executeJar(inputBuffer: Buffer, format: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const javaProcess = spawn(this.jarPath, [format])
+      const javaProcess = spawn(this.binPath, [format])
 
       const outputBuffer: Buffer[] = []
       let errorOutput = ''
