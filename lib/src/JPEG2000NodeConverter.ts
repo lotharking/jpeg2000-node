@@ -58,9 +58,9 @@ export class JPEG2000NodeConverter {
     }
   }
 
-    /**
+  /**
    * Executes the conversion binary, sending the image via stdin and receiving the result via stdout.
-   * 
+   *
    * @param inputBuffer The input image as a Buffer
    * @param format The desired output format (e.g., "jpg", "png", "jp2")
    * @returns The converted image as a Buffer

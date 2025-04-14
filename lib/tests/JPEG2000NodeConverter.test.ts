@@ -8,7 +8,7 @@ describe('JPEG2000NodeConverter', () => {
 
   it('should convert test.jp2 to jpg', async () => {
     const inputBuffer = fs.readFileSync(inputFilePath)
-    const outputBuffer = await (new JPEG2000NodeConverter()).convertFromJPEG2000(inputBuffer, 'jpg')
+    const outputBuffer = await new JPEG2000NodeConverter().convertFromJPEG2000(inputBuffer, 'jpg')
     const outputBase64 = outputBuffer.toString('base64')
 
     expect(outputBase64).toMatch(/^([A-Za-z0-9+/=]+)$/)
