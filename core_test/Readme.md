@@ -1,7 +1,10 @@
 # Compile
 ```c
-gcc convert.c -o convert -static -lopenjp2 -lm
+gcc -DDEBUG convert.c -o convert -static -lopenjp2 -lm
 ```
+>Use -DDEBUG flag only for dev purpose
+
+# Test the code
 ```cmd
 cat test.jp2 | ./convert jpg > output.jpg
 ```

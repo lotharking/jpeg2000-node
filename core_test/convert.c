@@ -72,7 +72,10 @@ int main(int argc, char *argv[]) {
 
     opj_set_error_handler(codec, error_callback, NULL);
     opj_set_warning_handler(codec, warning_callback, NULL);
+    
+    #ifdef DEBUG
     opj_set_info_handler(codec, info_callback, NULL);
+    #endif
 
     opj_dparameters_t params;
     opj_set_default_decoder_parameters(&params);
