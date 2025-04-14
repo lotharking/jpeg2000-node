@@ -5,7 +5,15 @@ export class JPEG2000NodeConverter {
   private binPath: string
 
   constructor() {
-    this.binPath = path.resolve(__dirname, 'bin', 'convert')
+    const platform = process.platform
+    let binFileName = 'convert'
+
+    if (platform === 'win32') binFileName = 'convert-win.exe'
+    else if (platform === 'darwin') binFileName = 'convert-mac'
+    else if (platform === 'linux') binFileName = 'convert-linux'
+    else throw new Error(`Unsupported platform: ${platform}`)
+
+    this.binPath = path.resolve(__dirname, 'bin', binFileName)
   }
 
   /**
