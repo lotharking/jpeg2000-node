@@ -43,7 +43,7 @@ export class JPEG2000NodeConverter {
   }
 
   /**
-   * Handles the conversion process by interacting with the Java JAR
+   * Handles the conversion process
    * @param inputBuffer The input image buffer
    * @param format Target format
    * @returns Converted image as a buffer
@@ -58,36 +58,37 @@ export class JPEG2000NodeConverter {
     }
   }
 
-  /**
-   * Executes the Java JAR, passing the image buffer via stdin.
-   * @param inputBuffer The image as a Buffer
-   * @param format The desired output format (e.g., "jpg", "png")
+    /**
+   * Executes the conversion binary, sending the image via stdin and receiving the result via stdout.
+   * 
+   * @param inputBuffer The input image as a Buffer
+   * @param format The desired output format (e.g., "jpg", "png", "jp2")
    * @returns The converted image as a Buffer
    */
   private _executeJar(inputBuffer: Buffer, format: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const javaProcess = spawn(this.binPath, [format])
+      const process = spawn(this.binPath, [format])
 
       const outputBuffer: Buffer[] = []
       let errorOutput = ''
 
       // Capture stdout as Buffer
-      javaProcess.stdout.on('data', data => outputBuffer.push(data))
+      process.stdout.on('data', data => outputBuffer.push(data))
 
       // Capture stderr
-      javaProcess.stderr.on('data', data => (errorOutput += data.toString()))
+      process.stderr.on('data', data => (errorOutput += data.toString()))
 
-      javaProcess.on('close', code => {
+      process.on('close', code => {
         if (code !== 0) {
-          reject(new Error(`Java process failed with code ${code}: ${errorOutput}`))
+          reject(new Error(`Process failed with code ${code}: ${errorOutput}`))
         } else {
           resolve(Buffer.concat(outputBuffer)) // Combine all received chunks
         }
       })
 
-      // Write image buffer to Java process and close stdin
-      javaProcess.stdin.write(inputBuffer)
-      javaProcess.stdin.end()
+      // Write image buffer to process and close stdin
+      process.stdin.write(inputBuffer)
+      process.stdin.end()
     })
   }
 }
