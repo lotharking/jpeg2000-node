@@ -19,61 +19,65 @@ void warning_callback(const char *msg, void *client_data) {
 
 void info_callback(const char *msg, void *client_data) {
     (void)client_data;
-    fprintf(stdout, "[INFO] %s\n", msg);
+    fprintf(stderr, "[INFO] %s\n", msg);
+}
+
+// Callback function for stb_image_write to write to file
+static void write_to_file(void *context, void *data, int size) {
+    FILE *file = (FILE*)context;
+    fwrite(data, 1, size, file);
+    fflush(file); // Ensure data is written immediately
 }
 
 int main(int argc, char *argv[]) {
-    const char* input_filename = "test.jp2";
-    const char* format = "jpg";  // Default format
+    const char* format = "png";  // Default format
+    const char* temp_input = "temp_input.jp2";
+    const char* temp_output = "temp_output.bin";
 
-    if (argc > 1) input_filename = argv[1];
-    if (argc > 2) {
-        format = argv[2];
+    if (argc > 1) {
+        format = argv[1];
     }
-    char output_filename[100];
-    snprintf(output_filename, sizeof(output_filename), "output.%s", format);
-
 
     // Validate supported format
     if (strcmp(format, "png") != 0 &&
         strcmp(format, "bmp") != 0 &&
         strcmp(format, "jpg") != 0 &&
         strcmp(format, "jpeg") != 0) {
-        fprintf(stderr, "Error: Unsupported format: %s\nSupported formats: png, bmp, jpg\n", format);
+        fprintf(stderr, "Error: Unsupported format: %s\nSupported formats: png, bmp, jpg, jpeg\n", format);
         return 1;
     }
     
-    // --- Read JP2 file into memory ---
-    FILE* f = fopen(input_filename, "rb");
-    if (!f) {
-        fprintf(stderr, "Could not open file: %s\n", input_filename);
+    // --- Save stdin to temporary file ---
+    FILE* temp_in = fopen(temp_input, "wb");
+    if (!temp_in) {
+        fprintf(stderr, "Error: Could not create temporary input file\n");
         return 1;
     }
 
-    fseek(f, 0, SEEK_END);
-    size_t size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    unsigned char* buffer = malloc(size);
-    if (!buffer) {
-        fprintf(stderr, "Error: Could not allocate memory for buffer\n");
-        fclose(f);
+    unsigned char buffer[8192];
+    size_t bytes_read;
+    size_t total_bytes = 0;
+    
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
+        fwrite(buffer, 1, bytes_read, temp_in);
+        total_bytes += bytes_read;
+    }
+    
+    fclose(temp_in);
+    
+    if (total_bytes == 0) {
+        fprintf(stderr, "Error: No data received from stdin\n");
+        remove(temp_input);
         return 1;
     }
-
-    size_t read_bytes = fread(buffer, 1, size, f);
-    fclose(f);
-    if (read_bytes != size) {
-        fprintf(stderr, "Error: Could not read the entire file\n");
-        free(buffer);
-        return 1;
-    }
+    
+    fprintf(stderr, "Read %zu bytes from stdin\n", total_bytes);
 
     // --- Initialize OpenJPEG ---
     opj_codec_t* codec = opj_create_decompress(OPJ_CODEC_JP2);
     if (!codec) {
         fprintf(stderr, "Error: Could not create decoder\n");
-        free(buffer);
+        remove(temp_input);
         return 1;
     }
 
@@ -83,41 +87,61 @@ int main(int argc, char *argv[]) {
 
     opj_dparameters_t parameters;
     opj_set_default_decoder_parameters(&parameters);
+    parameters.decod_format = 0; // JP2 format
 
     if (!opj_setup_decoder(codec, &parameters)) {
         fprintf(stderr, "Error setting up decoder\n");
         opj_destroy_codec(codec);
-        free(buffer);
+        remove(temp_input);
         return 1;
     }
 
-    opj_stream_t* stream = opj_stream_create_default_file_stream(input_filename, OPJ_TRUE);
+    opj_stream_t* stream = opj_stream_create_default_file_stream(temp_input, OPJ_TRUE);
     if (!stream) {
         fprintf(stderr, "Error creating stream\n");
         opj_destroy_codec(codec);
-        free(buffer);
+        remove(temp_input);
         return 1;
     }
 
     opj_image_t* image = NULL;
-    if (!opj_read_header(stream, codec, &image) ||
-        !opj_decode(codec, stream, image) ||
-        !opj_end_decompress(codec, stream)) {
-        fprintf(stderr, "Error processing image\n");
+    if (!opj_read_header(stream, codec, &image)) {
+        fprintf(stderr, "Error reading header\n");
+        opj_stream_destroy(stream);
+        opj_destroy_codec(codec);
+        remove(temp_input);
+        return 1;
+    }
+
+    if (!opj_decode(codec, stream, image)) {
+        fprintf(stderr, "Error decoding image\n");
         opj_image_destroy(image);
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
-        free(buffer);
+        remove(temp_input);
         return 1;
     }
+
+    if (!opj_end_decompress(codec, stream)) {
+        fprintf(stderr, "Error ending decompression\n");
+        opj_image_destroy(image);
+        opj_stream_destroy(stream);
+        opj_destroy_codec(codec);
+        remove(temp_input);
+        return 1;
+    }
+
+    opj_stream_destroy(stream);
+
+    fprintf(stderr, "Successfully decoded JP2 image: %d x %d with %d components\n", 
+            image->x1 - image->x0, image->y1 - image->y0, image->numcomps);
 
     // --- Validation and conversion to RGB ---
     if (image->numcomps < 3) {
         fprintf(stderr, "Error: Image must have at least 3 components (RGB)\n");
         opj_image_destroy(image);
-        opj_stream_destroy(stream);
         opj_destroy_codec(codec);
-        free(buffer);
+        remove(temp_input);
         return 1;
     }
 
@@ -128,9 +152,8 @@ int main(int argc, char *argv[]) {
         if (image->comps[i].w != width || image->comps[i].h != height) {
             fprintf(stderr, "Error: Components have different dimensions\n");
             opj_image_destroy(image);
-            opj_stream_destroy(stream);
             opj_destroy_codec(codec);
-            free(buffer);
+            remove(temp_input);
             return 1;
         }
     }
@@ -139,9 +162,8 @@ int main(int argc, char *argv[]) {
     if (!rgb) {
         fprintf(stderr, "Error: Could not allocate memory for RGB image\n");
         opj_image_destroy(image);
-        opj_stream_destroy(stream);
         opj_destroy_codec(codec);
-        free(buffer);
+        remove(temp_input);
         return 1;
     }
 
@@ -162,19 +184,76 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // --- Save as PNG using stb_image_write ---
-    if (!stbi_write_png(output_filename, width, height, 3, rgb, width * 3)) {
-        fprintf(stderr, "Error writing PNG image\n");
-    } else {
-        printf("Image successfully converted: %s\n", output_filename);
+    fprintf(stderr, "Converted image to RGB format\n");
+
+    // Create temporary output file
+    FILE* temp_out = fopen(temp_output, "wb");
+    if (!temp_out) {
+        fprintf(stderr, "Error: Could not create temporary output file\n");
+        free(rgb);
+        opj_image_destroy(image);
+        opj_destroy_codec(codec);
+        remove(temp_input);
+        return 1;
     }
 
-    // --- Cleanup ---
+    // --- Write to temporary file using stb_image_write ---
+    int result = 0;
+    if (strcmp(format, "png") == 0) {
+        result = stbi_write_png_to_func(write_to_file, temp_out, width, height, 3, rgb, width * 3);
+    } else if (strcmp(format, "bmp") == 0) {
+        result = stbi_write_bmp_to_func(write_to_file, temp_out, width, height, 3, rgb);
+    } else if (strcmp(format, "jpg") == 0 || strcmp(format, "jpeg") == 0) {
+        result = stbi_write_jpg_to_func(write_to_file, temp_out, width, height, 3, rgb, 90); // Quality 90
+    }
+
+    fclose(temp_out);
+
+    if (!result) {
+        fprintf(stderr, "Error writing image to temporary file\n");
+        free(rgb);
+        opj_image_destroy(image);
+        opj_destroy_codec(codec);
+        remove(temp_input);
+        remove(temp_output);
+        return 1;
+    }
+
+    fprintf(stderr, "Successfully encoded image to %s format\n", format);
+
+    // --- Cleanup OpenJPEG resources ---
     free(rgb);
     opj_image_destroy(image);
-    opj_stream_destroy(stream);
     opj_destroy_codec(codec);
-    free(buffer);
 
+    // --- Copy temporary output file to stdout ---
+    FILE* out_file = fopen(temp_output, "rb");
+    if (!out_file) {
+        fprintf(stderr, "Error: Could not open temporary output file for reading\n");
+        remove(temp_input);
+        remove(temp_output);
+        return 1;
+    }
+
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), out_file)) > 0) {
+        size_t bytes_written = fwrite(buffer, 1, bytes_read, stdout);
+        if (bytes_written != bytes_read) {
+            fprintf(stderr, "Error: Failed to write all data to stdout\n");
+            fclose(out_file);
+            remove(temp_input);
+            remove(temp_output);
+            return 1;
+        }
+    }
+
+    // Flush stdout to ensure all data is written
+    fflush(stdout);
+    fclose(out_file);
+
+    // --- Remove temporary files ---
+    remove(temp_input);
+    remove(temp_output);
+
+    fprintf(stderr, "Conversion complete - program will now exit\n");
     return 0;
 }
