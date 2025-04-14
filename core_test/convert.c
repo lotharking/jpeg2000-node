@@ -50,7 +50,40 @@ void cleanup_all(opj_image_t* img, opj_codec_t* codec, const char* reason) {
     remove(TEMP_OUTPUT);
 }
 
+int run_test() {
+    fprintf(stderr, "Running test...\n");
+    int result = system("cat test.jp2 | ./convert jpg > output.jpg");
+
+    if (result != 0) {
+        fprintf(stderr, "Test failed with code %d\n", result);
+        return 1;
+    }
+
+    FILE* f = fopen("output.jpg", "rb");
+    if (!f) {
+        fprintf(stderr, "Test failed: output.jpg not created\n");
+        return 1;
+    }
+
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    fclose(f);
+
+    if (size <= 0) {
+        fprintf(stderr, "Test failed: output.jpg is empty\n");
+        return 1;
+    }
+
+    fprintf(stderr, "Test passed: output.jpg created (%ld bytes)\n", size);
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
+    // Run test mode
+    if (argc > 1 && strcmp(argv[1], "--test") == 0) {
+        return run_test();
+    }
+    
     const char* format = (argc > 1) ? argv[1] : "png";
     if (!is_format_supported(format)) {
         fprintf(stderr, "Unsupported format: %s\nSupported: png, bmp, jpg, jpeg\n", format);
