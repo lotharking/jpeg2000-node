@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.14](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.13...jp2-to-image@v0.0.14) (2025-04-15)
+
+
+### Features
+
+* core - java to c migration ([#49](https://github.com/lotharking/jpeg2000-node/issues/49)) ([6d20cb7](https://github.com/lotharking/jpeg2000-node/commit/6d20cb7847e43b670f5736f06bc26a429b60c847))
+
 ## [0.0.13](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.12...jp2-to-image@v0.0.13) (2025-04-04)
 
 
