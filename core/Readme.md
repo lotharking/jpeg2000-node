@@ -33,6 +33,15 @@ Run this command to compile the tool in **development mode** (adds debug symbols
 gcc -DDEBUG convert.c -o convert -static -lopenjp2 -lm
 ```
 
+> 🧠 **Tip:** If you have multiple OpenJPEG versions installed (e.g. `/usr/include/openjpeg-2.1/` and `/usr/include/openjpeg-2.4/`),  
+> you may need to explicitly specify the include path using `-I`, like this:
+>
+> ```bash
+> gcc -DDEBUG -I/usr/include/openjpeg-2.4 convert.c -o convert -static -lopenjp2 -lm
+> ```
+
+---
+
 ### Production Build for Node.js Integration
 
 To compile and place the binary in the `node` library directory:

@@ -1,4 +1,4 @@
-#include <openjpeg-2.4/openjpeg.h>
+#include <openjpeg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
