@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
     FILE* fout = fopen(TEMP_OUTPUT, "wb");
     if (!fout) {
         free(rgb);
-        cleanup_all(image, codec, "could not create temp output");
+        cleanup_all(image, codec, "could not create temp file output");
         return 1;
     }
 
