@@ -29,7 +29,18 @@ jobs:
 
       - name: Install vcpkg (Windows)
         if: runner.os == 'Windows'
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          .\bootstrap-vcpkg.bat
+          .\vcpkg.exe install openjpeg:x64-windows
+        shell: powershell
+
+      - name: Compile C binary (Windows)
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
       - name: Create bin directory
         run: mkdir -p bin
@@ -47,7 +58,7 @@ jobs:
 
       - name: Compile C binary (Windows)
         if: runner.os == 'Windows'
-        run: cl /O2 /Fe:bin\\convert-win.exe core\\convert.c openjp2.lib
+        run: cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows\include" /Fe:bin\convert-win.exe core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows\lib" openjp2.lib
         shell: powershell
 
       - name: Upload compiled binary
