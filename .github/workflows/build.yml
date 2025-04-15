@@ -29,18 +29,6 @@ jobs:
 
       - name: Install vcpkg (Windows)
         if: runner.os == 'Windows'
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: '2023.04.15'
-
-      - name: Install OpenJPEG with vcpkg (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          vcpkg install openjpeg:x64-windows
-        shell: powershell
-
-      - name: Set up MSVC Compiler (Windows)
-        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Create bin directory
@@ -59,7 +47,7 @@ jobs:
 
       - name: Compile C binary (Windows)
         if: runner.os == 'Windows'
-        run: cl /Icore /I"$env:VCPKG_ROOT\installed\x64-windows\include" core\convert.c /link /LIBPATH:"$env:VCPKG_ROOT\installed\x64-windows\lib" openjp2.lib /OUT:bin\convert-windows.exe
+        run: cl /O2 /Fe:bin\\convert-win.exe core\\convert.c openjp2.lib
         shell: powershell
 
       - name: Upload compiled binary
