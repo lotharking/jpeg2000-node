@@ -26,7 +26,7 @@ export class JPEG2000NodeConverter {
   }
 
   /**
-   * Converts a JPEG2000 buffer to another format
+   * Converts a JPEG2000 buffer to another format buffer
    * @param inputBuffer JPEG2000 image as a buffer
    * @param format Target format (default: "png")
    * @returns Converted image as a buffer
