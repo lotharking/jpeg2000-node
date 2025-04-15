@@ -1,11 +1,11 @@
 # JPEG2000 Node Wrapper
 
 ## Overview
-JPEG2000 Node Wrapper is a simple and efficient solution for converting JP2 images in TypeScript-based systems. It provides a seamless interface between Node.js and a Java-based JPEG2000 converter, leveraging Java's widespread availability in most systems to avoid additional installations.
+JPEG2000 Node Wrapper is a simple and efficient solution for converting JP2 images in TypeScript-based systems. It provides a seamless interface between Node.js and a C-based JPEG2000 converter, leveraging Java's widespread availability in most systems to avoid additional installations.
 
 This project consists of two main components:
 1. **jp2-to-image** (Node.js Wrapper) - A TypeScript library that exposes a user-friendly API to convert JP2 images.
-2. **core** (Java Backend) - A Java-based converter that performs the actual JP2 image processing.
+2. **core** (C Backend) - A C-based converter that performs the actual JP2 image processing.
 
 This approach ensures compatibility across various environments, including Docker, without requiring additional dependencies beyond Java itself.
 
