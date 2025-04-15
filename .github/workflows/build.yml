@@ -20,7 +20,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libopenjp2-7-dev build-essential
-          ls /usr/include
 
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
@@ -50,7 +49,7 @@ jobs:
 
       - name: Compile C binary (Linux)
         if: runner.os == 'Linux'
-        run: gcc -I/usr/include/openjpeg-2.4 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
+        run: gcc -I/usr/include/openjpeg-2.5 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
         shell: bash
 
       - name: Compile C binary (macOS)
