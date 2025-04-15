@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     name: Build and Package
-    if: ${{ contains(github.event.head_commit.message, 'chore(main):') }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -16,34 +15,52 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies (Linux only)
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libopenjp2-7-dev build-essential
 
-      - name: Install dependencies (macOS only)
+      - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
           brew update
           brew install openjpeg
 
-      - name: Set up MSVC Compiler (Windows only)
+      - name: Install vcpkg (Windows)
+        if: runner.os == 'Windows'
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: '2023.04.15'
+
+      - name: Install OpenJPEG with vcpkg (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          vcpkg install openjpeg:x64-windows
+        shell: powershell
+
+      - name: Set up MSVC Compiler (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Compile C binary
-        run: |
-          mkdir -p bin
-
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            gcc core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            clang core/convert.c -o bin/convert-mac -lopenjp2 -lm
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            cl /O2 /Fe:bin\\convert-win.exe core\\convert.c openjp2.lib
-          fi
+      - name: Create bin directory
+        run: mkdir -p bin
         shell: bash
+
+      - name: Compile C binary (Linux)
+        if: runner.os == 'Linux'
+        run: gcc -I/usr/include/openjpeg-2.4 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
+        shell: bash
+
+      - name: Compile C binary (macOS)
+        if: runner.os == 'macOS'
+        run: clang core/convert.c -o bin/convert-macos -I/opt/homebrew/include/openjpeg-2.5 -L/opt/homebrew/lib -lopenjp2 -lm
+        shell: bash
+
+      - name: Compile C binary (Windows)
+        if: runner.os == 'Windows'
+        run: cl /Icore /I"$env:VCPKG_ROOT\installed\x64-windows\include" core\convert.c /link /LIBPATH:"$env:VCPKG_ROOT\installed\x64-windows\lib" openjp2.lib /OUT:bin\convert-windows.exe
+        shell: powershell
 
       - name: Upload compiled binary
         uses: actions/upload-artifact@v4
