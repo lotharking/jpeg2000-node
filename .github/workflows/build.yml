@@ -61,11 +61,22 @@ jobs:
         run: cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows\include" /Fe:bin\convert-win.exe core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows\lib" openjp2.lib
         shell: powershell
 
-      - name: Upload compiled binary
+      - name: Rename binary for uniqueness
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            mv bin/convert-linux bin/convert-linux
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            mv bin/convert-macos bin/convert-macos
+          else
+            mv bin/convert-win.exe bin/convert-win.exe
+          fi
+        shell: bash
+      
+      - name: Upload binaries (shared artifact)
         uses: actions/upload-artifact@v4
         with:
           name: convert-binaries
-          path: bin/
+          path: bin/*
 
   release:
     name: Process Release
