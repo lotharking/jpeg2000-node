@@ -73,10 +73,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
 
-    strategy:
-      matrix:
-        artifact: [convert-Linux, convert-macOS, convert-Windows]
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -97,12 +93,19 @@ jobs:
         echo "Release outputs:"
         echo "${{ toJson(steps.release-please.outputs) }}"
 
-    - name: Download ${{ matrix.artifact }}
+    - name: Download all artifacts
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      uses: actions/download-artifact@v4
-      with:
-        name: ${{ matrix.artifact }}
-        path: lib/src/bin/
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        mkdir -p lib/src/bin/
+        
+        for artifact in convert-Linux convert-macOS convert-Windows; do
+          echo "Downloading $artifact"
+          gh run download --name "$artifact" --dir lib/src/bin/ --repo ${{ github.repository }} || echo "Artifact $artifact not found"
+        done
+        
+        ls -la lib/src/bin/
 
     - name: Setup Node.js for NPM Publishing
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
