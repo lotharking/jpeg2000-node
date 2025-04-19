@@ -27,7 +27,6 @@
     "prepublishOnly": "yarn run build",
     "lint": "eslint \"{src,tests}/**/*.ts\" --fix",
     "validate": "yarn lint && yarn check-types && yarn check-format",
-    "postinstall": "node scripts/remove-executables.js",
     "test": "jest"
   },
   "keywords": [
