@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/lotharking/jpeg2000-node"
   },
-  "version": "0.0.15",
+  "version": "0.0.14",
   "scripts": {
     "check-types": "yarn check-types:build && yarn check-types:tests",
     "check-types:tests": "tsc -p tsconfig.test.json --noEmit",
@@ -21,7 +21,7 @@
     "prettier": "prettier '**/*.+(js|json|ts|tsx|md|yml|yaml)'",
     "format": "yarn prettier --write",
     "check-format": "yarn prettier --list-different",
-    "build": "yarn run clean && yarn run compile && cpx src/bin/**/* build/bin",
+    "build": "yarn run clean && yarn run compile && cpx 'src/bin/**/*' build/bin",
     "clean": "rimraf -rf ./build",
     "compile": "tsc -p tsconfig.json",
     "prepublishOnly": "yarn run build",
