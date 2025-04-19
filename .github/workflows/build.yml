@@ -93,19 +93,26 @@ jobs:
         echo "Release outputs:"
         echo "${{ toJson(steps.release-please.outputs) }}"
 
-    - name: Download all artifacts
+    - name: Download Linux Artifact
+      uses: actions/download-artifact@v4
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        mkdir -p lib/src/bin/
-        
-        for artifact in convert-Linux convert-macOS convert-Windows; do
-          echo "Downloading $artifact"
-          gh run download --name "$artifact" --dir lib/src/bin/ --repo ${{ github.repository }} || echo "Artifact $artifact not found"
-        done
-        
-        ls -la lib/src/bin/
+      with:
+        name: convert-Linux
+        path: lib/src/bin/
+
+    - name: Download macOS Artifact
+      uses: actions/download-artifact@v4
+      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+      with:
+        name: convert-macOS
+        path: lib/src/bin/
+
+    - name: Download Windows Artifact
+      uses: actions/download-artifact@v4
+      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+      with:
+        name: convert-Windows
+        path: lib/src/bin/
 
     - name: Setup Node.js for NPM Publishing
       if: ${{ steps.release-please.outputs.releases_created == 'true' }}
