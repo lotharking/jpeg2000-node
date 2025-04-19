@@ -1,22 +1,5 @@
 # Changelog
 
-## [0.0.14](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.13...jp2-to-image@v0.0.14) (2025-04-19)
-
-
-### Features
-
-* core - java to c migration ([#49](https://github.com/lotharking/jpeg2000-node/issues/49)) ([6d20cb7](https://github.com/lotharking/jpeg2000-node/commit/6d20cb7847e43b670f5736f06bc26a429b60c847))
-
-
-### Bug Fixes
-
-* update version ([#53](https://github.com/lotharking/jpeg2000-node/issues/53)) ([68d5836](https://github.com/lotharking/jpeg2000-node/commit/68d58360a3a44de37462a56be5f3fda58fd73679))
-* update version ([#53](https://github.com/lotharking/jpeg2000-node/issues/53)) ([409b994](https://github.com/lotharking/jpeg2000-node/commit/409b9949c0b1ec1a1fd305b62df12329b6c7ed10))
-* update version ([#53](https://github.com/lotharking/jpeg2000-node/issues/53)) ([#57](https://github.com/lotharking/jpeg2000-node/issues/57)) ([b69f8b9](https://github.com/lotharking/jpeg2000-node/commit/b69f8b9a76f4e93073543fa5c6c634e192878c82))
-* update version ([#53](https://github.com/lotharking/jpeg2000-node/issues/53)) ([#59](https://github.com/lotharking/jpeg2000-node/issues/59)) ([d1c4701](https://github.com/lotharking/jpeg2000-node/commit/d1c4701a4c03389f94061e2837700130637b5e69))
-* update version ([#63](https://github.com/lotharking/jpeg2000-node/issues/63)) ([caa3c52](https://github.com/lotharking/jpeg2000-node/commit/caa3c52545f72cb3335de7d171899fff819dc205))
-* upload doc ([#55](https://github.com/lotharking/jpeg2000-node/issues/55)) ([d0ef8e1](https://github.com/lotharking/jpeg2000-node/commit/d0ef8e10b577861ebae1c4be54812e48abde33fe))
-
 ## [0.0.13](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.12...jp2-to-image@v0.0.13) (2025-04-04)
 
 
