@@ -18,7 +18,7 @@ npm install jp2-to-image
 import { convertFromJPEG2000 } from 'jp2-to-image'
 
 try {
-  await convertFromJPEG2000(inputBuffer, 'png') // Return a buffer
+  await new JPEG2000NodeConverter().convertFromJPEG2000(inputBuffer, 'png') // Return a buffer
   console.log('Conversion successful!')
 } catch (error) {
   console.error('Conversion failed:', error)
