@@ -49,12 +49,16 @@ jobs:
 
       - name: Compile C binary (Linux)
         if: runner.os == 'Linux'
-        run: gcc -I/usr/include/openjpeg-2.5 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
+        run: |
+          gcc -I/usr/include/openjpeg-2.5 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
+          chmod +x bin/convert-linux
         shell: bash
 
       - name: Compile C binary (macOS)
         if: runner.os == 'macOS'
-        run: clang core/convert.c -o bin/convert-macos -I/opt/homebrew/include/openjpeg-2.5 -L/opt/homebrew/lib -lopenjp2 -lm
+        run: |
+          clang core/convert.c -o bin/convert-macos -I/opt/homebrew/include/openjpeg-2.5 -L/opt/homebrew/lib -lopenjp2 -lm
+          chmod +x bin/convert-macos
         shell: bash
 
       - name: Compile C binary (Windows)
