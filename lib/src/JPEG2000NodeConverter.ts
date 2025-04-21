@@ -1,4 +1,5 @@
 import { spawn } from 'child_process'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 
 export class JPEG2000NodeConverter {
@@ -14,6 +15,11 @@ export class JPEG2000NodeConverter {
     else throw new Error(`Unsupported platform: ${platform}`)
 
     this.binPath = path.resolve(__dirname, 'bin', binFileName)
+
+    if (platform !== 'win32') {
+      fs.ensureFileSync(this.binPath)
+      fs.chmodSync(this.binPath, 0o755)
+    }
   }
 
   /**
