@@ -181,7 +181,7 @@ __metadata:
   resolution: "converter@workspace:."
   dependencies:
     "@types/node": ^18.19.79
-    jp2-to-image: ^0.0.17
+    jp2-to-image: ^0.0.18
     prettier: ^3.2.5
     rimraf: ^6.0.1
     ts-node: ^10.9.2
@@ -285,10 +285,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jp2-to-image@npm:^0.0.17":
-  version: 0.0.17
-  resolution: "jp2-to-image@npm:0.0.17"
-  checksum: 27cdd1964f1769d1ee1617a889bb98149b2e258186c7c55f50aacd029f6d5e1b14d1fbd90c99004f83352c1c5955fc4c2500a91078b95a8601c93153fb77a8f3
+"jp2-to-image@npm:^0.0.18":
+  version: 0.0.18
+  resolution: "jp2-to-image@npm:0.0.18"
+  checksum: 31e393b5b22001f468e88c2725c5c787bf4fa3891bc3ba7e5def1acbe02e8c0392018a39ba9d9364235671674e3207e226b6be4e96b7d8144883b531e4e6677f
   languageName: node
   linkType: hard
 
