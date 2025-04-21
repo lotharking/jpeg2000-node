@@ -88,8 +88,8 @@ jobs:
             git clone https://github.com/uclouvain/openjpeg.git
             cd openjpeg
             mkdir -p build && cd build
-            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PKGCONFIG_FILES=OFF -DBUILD_TESTING=OFF -DBUILD_CODEC=OFF -DBUILD_JPIP=OFF
-            make -j$(sysctl -n hw.ncpu) openjp2_static
+            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_CODEC=OFF -DBUILD_JPIP=OFF
+            make -j$(sysctl -n hw.ncpu)
             sudo make install
           fi
         shell: bash
