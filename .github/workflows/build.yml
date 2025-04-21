@@ -84,8 +84,9 @@ jobs:
       - name: Build static OpenJPEG (macOS)
         if: runner.os == 'macOS'
         run: |
-          if [ ! -d "openjpeg" ]; then
-            git clone https://github.com/uclouvain/openjpeg.git
+          if [ ! -f "openjpeg/CMakeLists.txt" ]; then
+            rm -rf openjpeg
+            git clone --depth 1 https://github.com/uclouvain/openjpeg.git
           fi
 
           cd openjpeg
