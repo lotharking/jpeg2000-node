@@ -32,7 +32,7 @@ export class JPEG2000NodeConverter {
    * @returns Converted image as a buffer
    */
   async convertFromJPEG2000(inputBuffer: Buffer, format: string = 'png'): Promise<Buffer> {
-    return this._convertImage(inputBuffer, format) 
+    return this._convertImage(inputBuffer, format)
   }
 
   /**
