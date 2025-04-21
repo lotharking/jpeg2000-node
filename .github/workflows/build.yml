@@ -174,7 +174,6 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
       
       - name: Enable Corepack and Setup Yarn
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
