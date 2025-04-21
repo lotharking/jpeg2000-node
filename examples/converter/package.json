@@ -30,6 +30,6 @@
   },
   "packageManager": "yarn@3.6.1",
   "dependencies": {
-    "jp2-to-image": "^0.0.18"
+    "jp2-to-image": "^0.0.19"
   }
 }
