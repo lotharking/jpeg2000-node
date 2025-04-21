@@ -155,7 +155,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Print release outputs for debugging
-        if: ${{ always() }}
+        continue-on-error: true
         run: |
           echo "Release outputs:"
           echo "${{ toJson(steps.release-please.outputs) }}"

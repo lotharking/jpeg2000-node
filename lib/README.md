@@ -10,6 +10,8 @@
 yarn add jp2-to-image
 # or
 npm install jp2-to-image
+# or
+pnpm add jp2-to-image
 ```
 
 ### 2. Import and use in TypeScript
