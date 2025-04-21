@@ -78,7 +78,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install cmake libtiff libjpeg lcms2 xz zlib zstd
+          brew install openjpeg cmake libtiff
         shell: bash
 
       - name: Build static OpenJPEG (macOS)
@@ -88,8 +88,8 @@ jobs:
             git clone https://github.com/uclouvain/openjpeg.git
             cd openjpeg
             mkdir -p build && cd build
-            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PKGCONFIG_FILES=OFF -DBUILD_TESTING=OFF
-            make -j$(sysctl -n hw.ncpu)
+            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PKGCONFIG_FILES=OFF -DBUILD_TESTING=OFF -DBUILD_CODEC=OFF -DBUILD_JPIP=OFF
+            make -j$(sysctl -n hw.ncpu) openjp2_static
             sudo make install
           fi
         shell: bash
