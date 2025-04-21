@@ -1,157 +1,197 @@
 name: Build
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+    paths:
+      - 'core/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'core/**'
+      - '.github/workflows/**'
+
+env:
+  OPENJPEG_VERSION: 2.5
 
 jobs:
   build:
     name: Build and Package
-    if: ${{ contains(github.event.head_commit.message, 'chore(main):') }}
+    if: ${{ contains(github.event.head_commit.message, 'chore(main):') || github.event_name == 'pull_request' }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            binary_name: convert-linux
+          - os: windows-latest
+            binary_name: convert-win.exe
+          - os: macos-latest
+            binary_name: convert-macos
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libopenjp2-7-dev build-essential
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-          brew install openjpeg
-
-      - name: Install vcpkg (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          cd vcpkg
-          .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install openjpeg:x64-windows-static
-        shell: powershell
-
-      - name: Compile C binary (Windows)
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Set up build cache
+        uses: actions/cache@v3
         with:
-          arch: x64
+          path: |
+            ~/.vcpkg
+            vcpkg
+            openjpeg/build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/convert.c') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
 
       - name: Create bin directory
         run: mkdir -p bin
         shell: bash
 
-      - name: Compile C binary (Linux)
+      # Linux setup
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          gcc -I/usr/include/openjpeg-2.5 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
-          chmod +x bin/convert-linux
+          sudo apt-get update
+          sudo apt-get install -y libopenjp2-7-dev build-essential
         shell: bash
-      
+
+      # Windows setup
+      - name: Install vcpkg (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if (!(Test-Path vcpkg/.git)) {
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            .\bootstrap-vcpkg.bat
+            .\vcpkg.exe install openjpeg:x64-windows-static
+          }
+        shell: powershell
+
+      - name: Setup MSVC for Windows
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      # MacOS setup
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install openjpeg cmake
+        shell: bash
+
       - name: Build static OpenJPEG (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install cmake
-          git clone https://github.com/uclouvain/openjpeg.git
-          cd openjpeg
-          mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PKGCONFIG_FILES=OFF -DBUILD_TESTING=OFF
-          make -j$(sysctl -n hw.ncpu)
-          sudo make install
+          if [ ! -d "openjpeg/build" ]; then
+            git clone https://github.com/uclouvain/openjpeg.git
+            cd openjpeg
+            mkdir -p build && cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PKGCONFIG_FILES=OFF -DBUILD_TESTING=OFF
+            make -j$(sysctl -n hw.ncpu)
+            sudo make install
+          fi
+        shell: bash
+
+      # Build steps for each platform
+      - name: Compile C binary (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          gcc -I/usr/include/openjpeg-${{ env.OPENJPEG_VERSION }} core/convert.c -o bin/${{ matrix.binary_name }} -static -lopenjp2 -lm
+          chmod +x bin/${{ matrix.binary_name }}
         shell: bash
       
       - name: Compile C binary (macOS)
         if: runner.os == 'macOS'
         run: |
-          clang core/convert.c -o bin/convert-macos -I/usr/local/include/openjpeg-2.5 -L/usr/local/lib /usr/local/lib/libopenjp2.a -lm
-          chmod +x bin/convert-macos
+          clang core/convert.c -o bin/${{ matrix.binary_name }} -I/usr/local/include/openjpeg-${{ env.OPENJPEG_VERSION }} -L/usr/local/lib /usr/local/lib/libopenjp2.a -lm
+          chmod +x bin/${{ matrix.binary_name }}
         shell: bash
 
       - name: Compile C binary (Windows)
         if: runner.os == 'Windows'
-        run: cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\include" /Fe:bin\convert-win.exe core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\lib" openjp2.lib
+        run: |
+          cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\include" /Fe:bin\${{ matrix.binary_name }} core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\lib" openjp2.lib
         shell: powershell
-      
-      - name: Upload binaries (shared artifact)
+
+      - name: Test binary
+        run: |
+          ls -la bin/
+          if [ -f "bin/${{ matrix.binary_name }}" ]; then
+            echo "Binary successfully built!"
+          else
+            echo "Binary build failed!"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: convert-${{runner.os}}
-          path: bin/
+          name: convert-${{ runner.os }}
+          path: bin/${{ matrix.binary_name }}
+          if-no-files-found: error
 
   release:
     name: Process Release
     runs-on: ubuntu-latest
     needs: build
-
+    if: ${{ contains(github.event.head_commit.message, 'chore(main):') }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Process Release Please
-      uses: googleapis/release-please-action@v4
-      id: release-please
-      with:
-        config-file: release-please-config.json
-        manifest-file: .release-please-manifest.json
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Print release outputs for debugging
-      continue-on-error: true
-      run: |
-        echo "Release outputs:"
-        echo "${{ toJson(steps.release-please.outputs) }}"
-
-    - name: Download Linux Artifact
-      uses: actions/download-artifact@v4
-      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      with:
-        name: convert-Linux
-        path: lib/src/bin/
-
-    - name: Download macOS Artifact
-      uses: actions/download-artifact@v4
-      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      with:
-        name: convert-macOS
-        path: lib/src/bin/
-
-    - name: Download Windows Artifact
-      uses: actions/download-artifact@v4
-      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      with:
-        name: convert-Windows
-        path: lib/src/bin/
-
-    - name: Setup Node.js for NPM Publishing
-      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        registry-url: 'https://registry.npmjs.org'
-
-    - name: Enable Corepack and Setup Yarn
-      run: |
-        corepack enable
-        corepack prepare yarn@3.6.1 --activate
-        yarn --version
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Process Release Please
+        uses: googleapis/release-please-action@v4
+        id: release-please
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Print release outputs for debugging
+        if: ${{ always() }}
+        run: |
+          echo "Release outputs:"
+          echo "${{ toJson(steps.release-please.outputs) }}"
         
-    - name: Publish to NPM
-      if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-      run: |
-        cd lib
-        yarn install --immutable
-        yarn build
-        rm -rf src/bin/
-        echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
-        yarn config set npmAuthToken ${NPM_AUTH_TOKEN}
-        yarn npm publish --access public
-      env:
-         NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Download artifacts
+        if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: convert-*
+          path: lib/src/bin/
+          merge-multiple: true
+      
+      - name: Setup Node.js for NPM Publishing
+        if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
+      
+      - name: Enable Corepack and Setup Yarn
+        if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.1 --activate
+          yarn --version
+      
+      - name: Publish to NPM
+        if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+        run: |
+          cd lib
+          yarn install --immutable
+          yarn build
+          rm -rf src/bin/
+          yarn config set npmAuthToken ${NPM_AUTH_TOKEN}
+          yarn npm publish --access public
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
