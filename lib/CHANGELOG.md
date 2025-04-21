@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.20](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.19...jp2-to-image@v0.0.20) (2025-04-21)
+
+
+### Bug Fixes
+
+* ensure execution permissions using fs-extra ([#94](https://github.com/lotharking/jpeg2000-node/issues/94)) ([3ef7d34](https://github.com/lotharking/jpeg2000-node/commit/3ef7d3468fa0bc9548346db3fe7ebb213661d3d5))
+
 ## [0.0.19](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.18...jp2-to-image@v0.0.19) (2025-04-21)
 
 
