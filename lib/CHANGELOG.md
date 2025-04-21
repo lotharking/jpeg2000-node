@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.17](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.16...jp2-to-image@v0.0.17) (2025-04-21)
+
+
+### Bug Fixes
+
+* add permissions ([#84](https://github.com/lotharking/jpeg2000-node/issues/84)) ([a6cf88b](https://github.com/lotharking/jpeg2000-node/commit/a6cf88b7d10f93f43a76c91310a3a2e93fec7281))
+* add version ([#86](https://github.com/lotharking/jpeg2000-node/issues/86)) ([c9befd2](https://github.com/lotharking/jpeg2000-node/commit/c9befd2ebea0e27053d7c35abd5eb39476bb6ced))
+* new version ([#88](https://github.com/lotharking/jpeg2000-node/issues/88)) ([81437fa](https://github.com/lotharking/jpeg2000-node/commit/81437fa66a8159a2d5fc00a69eac9e4cf5dd8527))
+
 ## [0.0.16](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.15...jp2-to-image@v0.0.16) (2025-04-19)
 
 
