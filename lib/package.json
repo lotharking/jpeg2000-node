@@ -2,7 +2,7 @@
   "name": "jp2-to-image",
   "main": "build/index",
   "types": "build/index",
-  "description": "A library for converting JPEG 2000 (JP2) images to other formats",
+  "description": "A library for converting JPEG 2000 (JP2) images to another format",
   "homepage": "https://github.com/lotharking/jpeg2000-node",
   "author": {
     "name": "Andres Vallecilla",

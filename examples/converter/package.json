@@ -17,9 +17,6 @@
     "dev": "ts-node index.ts",
     "prepublishOnly": "yarn run build"
   },
-  "dependencies": {
-    "jp2-to-image": "file:../../lib"
-  },
   "devDependencies": {
     "@types/node": "^18.19.79",
     "prettier": "^3.2.5",
@@ -31,5 +28,8 @@
   "engines": {
     "node": ">= 18"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.1",
+  "dependencies": {
+    "jp2-to-image": "^0.0.17"
+  }
 }
