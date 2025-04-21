@@ -101,14 +101,12 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           gcc -I/usr/include/openjpeg-${{ env.OPENJPEG_VERSION }} core/convert.c -o bin/${{ matrix.binary_name }} -static -lopenjp2 -lm
-          chmod +x bin/${{ matrix.binary_name }}
         shell: bash
       
       - name: Compile C binary (macOS)
         if: runner.os == 'macOS'
         run: |
           clang core/convert.c -o bin/${{ matrix.binary_name }} -I/usr/local/include/openjpeg-${{ env.OPENJPEG_VERSION }} -L/usr/local/lib /usr/local/lib/libopenjp2.a -lm
-          chmod +x bin/${{ matrix.binary_name }}
         shell: bash
 
       - name: Compile C binary (Windows)
@@ -186,6 +184,7 @@ jobs:
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
         run: |
           cd lib
+          chmod +x src/bin/*
           yarn install --immutable
           yarn build
           rm -rf src/bin/
