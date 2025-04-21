@@ -17,31 +17,12 @@ export class JPEG2000NodeConverter {
   }
 
   /**
-   * Converts an image buffer to JPEG2000 format
-   * @param inputBuffer Image data as a buffer
-   * @returns Converted image as a buffer
-   */
-  async convertToJPEG2000(inputBuffer: Buffer): Promise<Buffer> {
-    return this._convertImage(inputBuffer, 'jp2')
-  }
-
-  /**
-   * Converts a JPEG2000 buffer to another format buffer
-   * @param inputBuffer JPEG2000 image as a buffer
-   * @param format Target format (default: "png")
-   * @returns Converted image as a buffer
-   */
-  async convertFromJPEG2000(inputBuffer: Buffer, format: string = 'png'): Promise<Buffer> {
-    return this._convertImage(inputBuffer, format)
-  }
-
-  /**
    * Handles the conversion process
    * @param inputBuffer The input image buffer
    * @param format Target format
    * @returns Converted image as a buffer
    */
-  private async _convertImage(inputBuffer: Buffer, format: string): Promise<Buffer> {
+  async convertImage(inputBuffer: Buffer, format: string = 'png'): Promise<Buffer> {
     try {
       const convertedBuffer = await this._executeJar(inputBuffer, format)
       return convertedBuffer
