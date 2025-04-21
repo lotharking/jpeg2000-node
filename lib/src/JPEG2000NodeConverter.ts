@@ -6,7 +6,7 @@ export class JPEG2000NodeConverter {
 
   constructor() {
     const platform = process.platform
-    let binFileName = 'convert'
+    let binFileName = 'convert' // base path
 
     if (platform === 'win32') binFileName = 'convert-win.exe'
     else if (platform === 'darwin') binFileName = 'convert-mac'
