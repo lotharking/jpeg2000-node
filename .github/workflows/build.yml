@@ -34,7 +34,7 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git
           cd vcpkg
           .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install openjpeg:x64-windows
+          .\vcpkg.exe install openjpeg:x64-windows-static
         shell: powershell
 
       - name: Compile C binary (Windows)
@@ -53,17 +53,29 @@ jobs:
           gcc -I/usr/include/openjpeg-2.5 core/convert.c -o bin/convert-linux -static -lopenjp2 -lm
           chmod +x bin/convert-linux
         shell: bash
-
+      
+      - name: Build static OpenJPEG (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake
+          git clone https://github.com/uclouvain/openjpeg.git
+          cd openjpeg
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PKGCONFIG_FILES=OFF -DBUILD_TESTING=OFF
+          make -j$(sysctl -n hw.ncpu)
+          sudo make install
+        shell: bash
+      
       - name: Compile C binary (macOS)
         if: runner.os == 'macOS'
         run: |
-          clang core/convert.c -o bin/convert-macos -I/opt/homebrew/include/openjpeg-2.5 -L/opt/homebrew/lib -lopenjp2 -lm
+          clang core/convert.c -o bin/convert-macos -I/usr/local/include/openjpeg-2.5 -L/usr/local/lib /usr/local/lib/libopenjp2.a -lm
           chmod +x bin/convert-macos
         shell: bash
 
       - name: Compile C binary (Windows)
         if: runner.os == 'Windows'
-        run: cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows\include" /Fe:bin\convert-win.exe core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows\lib" openjp2.lib
+        run: cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\include" /Fe:bin\convert-win.exe core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\lib" openjp2.lib
         shell: powershell
       
       - name: Upload binaries (shared artifact)
