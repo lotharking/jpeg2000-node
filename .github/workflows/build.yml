@@ -184,10 +184,10 @@ jobs:
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
         run: |
           cd lib
-          chmod +x src/bin/*
           yarn install --immutable
           yarn build
           rm -rf src/bin/
+          chmod +x build/bin/*
           yarn config set npmAuthToken ${NPM_AUTH_TOKEN}
           yarn npm publish --access public
         env:
