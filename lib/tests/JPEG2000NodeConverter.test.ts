@@ -10,7 +10,7 @@ describe('JPEG2000NodeConverter', () => {
     const inputBuffer = fs.readFileSync(inputFilePath)
 
     const start = Date.now()
-    const outputBuffer = await new JPEG2000NodeConverter().convertFromJPEG2000(inputBuffer, 'jpg')
+    const outputBuffer = await new JPEG2000NodeConverter().convertImage(inputBuffer, 'jpg')
     const duration = Date.now() - start
 
     console.log(`Conversion took ${duration}ms`)

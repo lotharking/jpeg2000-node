@@ -17,7 +17,7 @@ async function main() {
   const start = Date.now()
 
   try {
-    const outputBuffer = await new JPEG2000NodeConverter().convertFromJPEG2000(inputBuffer, 'jpg')
+    const outputBuffer = await new JPEG2000NodeConverter().convertImage(inputBuffer, 'jpg')
     const duration = Date.now() - start
 
     fs.writeFileSync(outputFilePath, outputBuffer)
