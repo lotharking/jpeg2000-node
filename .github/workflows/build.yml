@@ -78,7 +78,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install openjpeg cmake libtiff
+          brew install cmake libtiff libjpeg lcms2 xz zlib zstd
         shell: bash
 
       - name: Build static OpenJPEG (macOS)
