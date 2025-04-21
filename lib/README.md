@@ -17,10 +17,10 @@ pnpm add jp2-to-image
 ### 2. Import and use in TypeScript
 
 ```typescript
-import { convertFromJPEG2000 } from 'jp2-to-image'
+import { JPEG2000NodeConverter } from 'jp2-to-image'
 
 try {
-  await new JPEG2000NodeConverter().convertFromJPEG2000(inputBuffer, 'png') // Return a buffer
+  await new JPEG2000NodeConverter().convertImage(inputBuffer, 'png') // Return a buffer
   console.log('Conversion successful!')
 } catch (error) {
   console.error('Conversion failed:', error)
