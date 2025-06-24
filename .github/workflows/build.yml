@@ -8,6 +8,10 @@ on:
       - 'core/**'
       - '.github/workflows/**'
 
+concurrency:
+  group: security-scan-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   OPENJPEG_VERSION: 2.5
 

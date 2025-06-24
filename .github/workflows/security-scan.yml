@@ -49,10 +49,11 @@ jobs:
         with:
           path: "./lib"
           output-format: sarif
+          output-file: grype-report.sarif
           fail-build: true
           severity-cutoff: critical
       - name: Upload SARIF report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.grype.outputs.sarif }}
 
