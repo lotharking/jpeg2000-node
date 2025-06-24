@@ -35,6 +35,11 @@ jobs:
     needs: codeql
     steps:
       - uses: actions/checkout@v3
+      - name: Enable Corepack and Setup Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.1 --activate
+          yarn --version
       - name: Install dependencies with Yarn
         run: |
           cd lib
