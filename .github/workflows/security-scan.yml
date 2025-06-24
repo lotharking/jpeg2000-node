@@ -1,0 +1,58 @@
+# .github/workflows/security-scan.yml
+name: Security & Dependency Scanning
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  codeql:
+    name: 🔍 CodeQL Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+
+  grype:
+    name: 🧭 Grype Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: codeql
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Grype scan on dependencies
+        uses: anchore/scan-action@v6
+        with:
+          path: "."
+          output-format: sarif
+          fail-build: true
+          severity-cutoff: high
+      - name: Upload SARIF report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.grype.outputs.sarif }}
+
+  gitleaks:
+    name: 🔐 Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    needs: grype
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Gitleaks
+        uses: zricethezav/gitleaks-action@v2
+        with:
+          config: .github/.gitleaks.toml
+          enable-annotations: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
