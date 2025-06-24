@@ -9,7 +9,7 @@ on:
       - '.github/workflows/**'
 
 concurrency:
-  group: security-scan-${{ github.ref }}
+  group: build-${{ github.ref }}
   cancel-in-progress: true
 
 env:

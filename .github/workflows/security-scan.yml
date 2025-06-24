@@ -45,6 +45,7 @@ jobs:
           cd lib
           yarn install --immutable
       - name: Run Grype scan on dependencies
+        id: grype
         uses: anchore/scan-action@v6
         with:
           path: "./lib"
@@ -55,7 +56,7 @@ jobs:
       - name: Upload SARIF report
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ steps.grype.outputs.sarif }}
+          sarif_file: ./grype-report.sarif
 
   gitleaks:
     name: 🔐 Gitleaks Secret Scan
