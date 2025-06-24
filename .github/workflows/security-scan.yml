@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies with Yarn
         run: |
           cd lib
-          yarn install --frozen-lockfile
+          yarn install --immutable
       - name: Run Grype scan on dependencies
         uses: anchore/scan-action@v6
         with:
