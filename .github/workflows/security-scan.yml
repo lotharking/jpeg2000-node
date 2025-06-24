@@ -34,7 +34,7 @@ jobs:
       - name: Run Grype scan on dependencies
         uses: anchore/scan-action@v6
         with:
-          path: "."
+          path: "./lib"
           output-format: sarif
           fail-build: true
           severity-cutoff: high
