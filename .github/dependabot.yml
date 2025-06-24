@@ -1,0 +1,12 @@
+# .github/dependabot.yml
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/lib"
+    schedule:
+      interval: "weekly"      # Frecuencia: daily, weekly, monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "fix"
+    allow:
+      - dependency-type: "direct"  # Solo las dependencias directas
