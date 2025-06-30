@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.21](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.20...jp2-to-image@v0.0.21) (2025-06-30)
+
+
+### Bug Fixes
+
+* bump @types/node from 18.19.86 to 24.0.3 in /lib ([#98](https://github.com/lotharking/jpeg2000-node/issues/98)) ([545e1c2](https://github.com/lotharking/jpeg2000-node/commit/545e1c23d0e21332dc2a3580378ebba94b860c45))
+* bump @typescript-eslint/parser from 6.21.0 to 8.35.0 in /lib ([#96](https://github.com/lotharking/jpeg2000-node/issues/96)) ([b75618e](https://github.com/lotharking/jpeg2000-node/commit/b75618e769ef48e4b4118492747e286469128030))
+* bump eslint-import-resolver-typescript from 3.10.1 to 4.4.3 in /lib ([#100](https://github.com/lotharking/jpeg2000-node/issues/100)) ([4a0c726](https://github.com/lotharking/jpeg2000-node/commit/4a0c726db4299f0374a1e9ba8dd6fdaadb879d00))
+* bump eslint-plugin-import from 2.31.0 to 2.32.0 in /lib ([#99](https://github.com/lotharking/jpeg2000-node/issues/99)) ([566a019](https://github.com/lotharking/jpeg2000-node/commit/566a01900d20fcb9f54b39ae090473b5996c2120))
+* bump eslint-plugin-prettier from 5.2.6 to 5.5.0 in /lib ([#97](https://github.com/lotharking/jpeg2000-node/issues/97)) ([855c358](https://github.com/lotharking/jpeg2000-node/commit/855c3586c22318f2a771d71d6edbec0377ceba88))
+* bump eslint-plugin-prettier from 5.5.0 to 5.5.1 in /lib ([#102](https://github.com/lotharking/jpeg2000-node/issues/102)) ([5ce10cd](https://github.com/lotharking/jpeg2000-node/commit/5ce10cd5123ad157051418fc4f213455cc1d84e6))
+* bump ts-jest from 29.3.2 to 29.4.0 in /lib ([#103](https://github.com/lotharking/jpeg2000-node/issues/103)) ([405e437](https://github.com/lotharking/jpeg2000-node/commit/405e4379ed84d3c18c85ea372574ec840821eea5))
+
 ## [0.0.20](https://github.com/lotharking/jpeg2000-node/compare/jp2-to-image@v0.0.19...jp2-to-image@v0.0.20) (2025-04-21)
 
 
