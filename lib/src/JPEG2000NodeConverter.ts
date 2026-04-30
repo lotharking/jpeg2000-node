@@ -1,74 +1,86 @@
-import { spawn } from 'child_process'
-import * as fs from 'fs-extra'
-import * as path from 'path'
+import type { OpenjpegModule } from './wasm/openjp2'
+
+import * as jpeg from 'jpeg-js'
+import { PNG } from 'pngjs'
 
 export class JPEG2000NodeConverter {
-  private binPath: string
+  private static modulePromise: Promise<OpenjpegModule> | null = null
 
-  constructor() {
-    const platform = process.platform
-    let binFileName = 'convert' // base path
-
-    if (platform === 'win32') binFileName = 'convert-win.exe'
-    else if (platform === 'darwin') binFileName = 'convert-mac'
-    else if (platform === 'linux') binFileName = 'convert-linux'
-    else throw new Error(`Unsupported platform: ${platform}`)
-
-    this.binPath = path.resolve(__dirname, 'bin', binFileName)
-
-    if (platform !== 'win32') {
-      fs.ensureFileSync(this.binPath)
-      fs.chmodSync(this.binPath, 0o755)
+  private static getModule(): Promise<OpenjpegModule> {
+    if (!JPEG2000NodeConverter.modulePromise) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const createModule = require('./wasm/openjp2') as (
+        options?: Record<string, unknown>,
+      ) => Promise<OpenjpegModule>
+      JPEG2000NodeConverter.modulePromise = createModule()
     }
+    return JPEG2000NodeConverter.modulePromise
   }
 
-  /**
-   * Handles the conversion process
-   * @param inputBuffer The input image buffer
-   * @param format Target format
-   * @returns Converted image as a buffer
-   */
   async convertImage(inputBuffer: Buffer, format: string = 'png'): Promise<Buffer> {
+    const mod = await JPEG2000NodeConverter.getModule()
+    return this._convert(mod, inputBuffer, format)
+  }
+
+  private _convert(mod: OpenjpegModule, inputBuffer: Buffer, format: string): Buffer {
+    const inputPtr = mod._malloc(inputBuffer.length)
+    if (!inputPtr) throw new Error('WASM memory allocation failed for input')
+
+    const widthPtr = mod._malloc(4)
+    const heightPtr = mod._malloc(4)
+    const channelsPtr = mod._malloc(4)
+
     try {
-      const convertedBuffer = await this._executeJar(inputBuffer, format)
-      return convertedBuffer
-    } catch (error) {
-      console.error(`Error converting to ${format}:`, error)
-      throw error
+      mod.HEAPU8.set(inputBuffer, inputPtr)
+
+      const pixelsPtr = mod._decode_jp2(inputPtr, inputBuffer.length, widthPtr, heightPtr, channelsPtr)
+      if (!pixelsPtr) throw new Error('JP2 decoding failed: invalid or unsupported image')
+
+      const width = mod.getValue(widthPtr, 'i32')
+      const height = mod.getValue(heightPtr, 'i32')
+      const channels = mod.getValue(channelsPtr, 'i32')
+
+      const pixelCount = width * height * channels
+      const pixels = Buffer.from(mod.HEAPU8.buffer, pixelsPtr, pixelCount)
+      // Copy before freeing WASM memory
+      const pixelsCopy = Buffer.from(pixels)
+      mod._free_buffer(pixelsPtr)
+
+      return this._encode(pixelsCopy, width, height, channels, format)
+    } finally {
+      mod._free(inputPtr)
+      mod._free(widthPtr)
+      mod._free(heightPtr)
+      mod._free(channelsPtr)
     }
   }
 
-  /**
-   * Executes the conversion binary, sending the image via stdin and receiving the result via stdout.
-   *
-   * @param inputBuffer The input image as a Buffer
-   * @param format The desired output format (e.g., "jpg", "png", "jp2")
-   * @returns The converted image as a Buffer
-   */
-  private _executeJar(inputBuffer: Buffer, format: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      const process = spawn(this.binPath, [format])
+  private _encode(pixels: Buffer, width: number, height: number, channels: number, format: string): Buffer {
+    const fmt = format.toLowerCase()
+    const rgba = channels === 4 ? pixels : this._rgbToRgba(pixels, width, height)
 
-      const outputBuffer: Buffer[] = []
-      let errorOutput = ''
+    if (fmt === 'png') {
+      const png = new PNG({ width, height })
+      png.data = rgba
+      return PNG.sync.write(png)
+    }
 
-      // Capture stdout as Buffer
-      process.stdout.on('data', data => outputBuffer.push(data))
+    if (fmt === 'jpg' || fmt === 'jpeg') {
+      const result = jpeg.encode({ data: rgba, width, height }, 90)
+      return result.data as Buffer
+    }
 
-      // Capture stderr
-      process.stderr.on('data', data => (errorOutput += data.toString()))
+    throw new Error(`Unsupported format: "${format}". Supported formats: png, jpg, jpeg`)
+  }
 
-      process.on('close', code => {
-        if (code !== 0) {
-          reject(new Error(`Process failed with code ${code}: ${errorOutput}`))
-        } else {
-          resolve(Buffer.concat(outputBuffer)) // Combine all received chunks
-        }
-      })
-
-      // Write image buffer to process and close stdin
-      process.stdin.write(inputBuffer)
-      process.stdin.end()
-    })
+  private _rgbToRgba(rgb: Buffer, width: number, height: number): Buffer {
+    const rgba = Buffer.alloc(width * height * 4)
+    for (let i = 0; i < width * height; i++) {
+      rgba[i * 4] = rgb[i * 3]
+      rgba[i * 4 + 1] = rgb[i * 3 + 1]
+      rgba[i * 4 + 2] = rgb[i * 3 + 2]
+      rgba[i * 4 + 3] = 255
+    }
+    return rgba
   }
 }

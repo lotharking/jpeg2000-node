@@ -1,4 +1,5 @@
 name: Build
+
 on:
   push:
     branches: [main]
@@ -6,148 +7,138 @@ on:
     branches: [main]
     paths:
       - 'core/**'
+      - 'lib/**'
       - '.github/workflows/**'
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  OPENJPEG_VERSION: 2.5
-
 jobs:
-  build:
-    name: Build and Package
-    if: ${{ contains(github.event.head_commit.message, 'chore(main):') || github.event_name == 'pull_request' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            binary_name: convert-linux
-          - os: windows-latest
-            binary_name: convert-win.exe
-          - os: macos-latest
-            binary_name: convert-macos
+  build-wasm:
+    name: Build WASM
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up build cache
-        uses: actions/cache@v3
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
         with:
-          path: |
-            ~/.vcpkg
-            vcpkg
-            openjpeg/build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/convert.c') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
+          version: 3.1.61
 
-      - name: Create bin directory
-        run: mkdir -p bin
-        shell: bash
-
-      # Linux setup
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libopenjp2-7-dev build-essential
-        shell: bash
-
-      # Windows setup
-      - name: Install vcpkg (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          if (!(Test-Path vcpkg/.git)) {
-            git clone https://github.com/microsoft/vcpkg.git
-            cd vcpkg
-            .\bootstrap-vcpkg.bat
-            .\vcpkg.exe install openjpeg:x64-windows-static
-          }
-        shell: powershell
-
-      - name: Setup MSVC for Windows
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Cache OpenJPEG WASM build
+        uses: actions/cache@v4
+        id: openjpeg-cache
         with:
-          arch: x64
+          path: openjpeg-wasm
+          key: openjpeg-wasm-v2.5.2-${{ hashFiles('core/convert.c') }}
+          restore-keys: openjpeg-wasm-v2.5.2-
 
-      # MacOS setup
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-          brew install openjpeg cmake libtiff
-        shell: bash
+      - name: Clone OpenJPEG
+        if: steps.openjpeg-cache.outputs.cache-hit != 'true'
+        run: git clone --depth 1 --branch v2.5.2 https://github.com/uclouvain/openjpeg.git openjpeg-wasm
 
-      - name: Build static OpenJPEG (macOS)
-        if: runner.os == 'macOS'
+      - name: Build OpenJPEG to WASM
+        if: steps.openjpeg-cache.outputs.cache-hit != 'true'
         run: |
-          if [ ! -f "openjpeg/CMakeLists.txt" ]; then
-            rm -rf openjpeg
-            git clone --depth 1 https://github.com/uclouvain/openjpeg.git
-          fi
+          mkdir -p openjpeg-wasm/build
+          cd openjpeg-wasm/build
+          emcmake cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_CODEC=OFF \
+            -DBUILD_JPIP=OFF
+          make -j$(nproc) openjp2
 
-          cd openjpeg
-          mkdir -p build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_CODEC=OFF -DBUILD_JPIP=OFF
-          make -j$(sysctl -n hw.ncpu)
-          sudo make install
-        shell: bash
+      - name: Build WASM module
+        run: |
+          OPENJPEG_INCLUDE="openjpeg-wasm/src/lib/openjp2"
+          OPENJPEG_LIB="openjpeg-wasm/build/bin/libopenjp2.a"
+          mkdir -p lib/src/wasm
+          emcc core/convert.c \
+            -I "$OPENJPEG_INCLUDE" \
+            "$OPENJPEG_LIB" \
+            -O3 \
+            -s MODULARIZE=1 \
+            -s ENVIRONMENT=node \
+            -s ALLOW_MEMORY_GROWTH=1 \
+            -s EXPORTED_FUNCTIONS='["_decode_jp2","_free_buffer","_malloc","_free"]' \
+            -s EXPORTED_RUNTIME_METHODS='["getValue","HEAPU8"]' \
+            -o lib/src/wasm/openjp2.js
 
-      # Build steps for each platform
-      - name: Compile C binary (Linux)
-        if: runner.os == 'Linux'
+      - name: Verify WASM unchanged (drift check)
         run: |
-          gcc -I/usr/include/openjpeg-${{ env.OPENJPEG_VERSION }} core/convert.c -o bin/${{ matrix.binary_name }} -static -lopenjp2 -lm
-        shell: bash
-      
-      - name: Compile C binary (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          clang core/convert.c -o bin/${{ matrix.binary_name }} -I/usr/local/include/openjpeg-${{ env.OPENJPEG_VERSION }} -L/usr/local/lib /usr/local/lib/libopenjp2.a -lm
-        shell: bash
-
-      - name: Compile C binary (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          cl /O2 /I"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\include" /Fe:bin\${{ matrix.binary_name }} core\convert.c /link /LIBPATH:"$env:GITHUB_WORKSPACE\vcpkg\installed\x64-windows-static\lib" openjp2.lib
-        shell: powershell
-
-      - name: Test binary
-        run: |
-          ls -la bin/
-          if [ -f "bin/${{ matrix.binary_name }}" ]; then
-            echo "Binary successfully built!"
+          if [ ! -f lib/src/wasm/openjp2.wasm ]; then
+            echo "::warning::No committed WASM found — this is the initial build. Commit lib/src/wasm/ to the repo."
+          elif git diff --quiet lib/src/wasm/; then
+            echo "WASM is up to date."
           else
-            echo "Binary build failed!"
+            echo "::error::Generated WASM differs from committed version. Run core/build-wasm.sh locally and commit the result."
+            git diff --stat lib/src/wasm/
             exit 1
           fi
-        shell: bash
 
-      - name: Upload binaries
+      - name: Upload WASM artifact
         uses: actions/upload-artifact@v4
         with:
-          name: convert-${{ runner.os }}
-          path: bin/${{ matrix.binary_name }}
+          name: wasm-build
+          path: lib/src/wasm/
           if-no-files-found: error
+
+  test:
+    name: Test (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    needs: build-wasm
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [18, 20, 22]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download WASM artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-build
+          path: lib/src/wasm/
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Enable Corepack and Setup Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.1 --activate
+
+      - name: Install dependencies
+        run: cd lib && yarn install --immutable
+
+      - name: Validate
+        run: cd lib && yarn validate
+
+      - name: Test
+        run: cd lib && yarn test
 
   release:
     name: Process Release
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build-wasm, test]
     if: ${{ contains(github.event.head_commit.message, 'chore(main):') }}
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Process Release Please
         uses: googleapis/release-please-action@v4
         id: release-please
@@ -155,42 +146,37 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Print release outputs for debugging
+
+      - name: Print release outputs
         continue-on-error: true
-        run: |
-          echo "Release outputs:"
-          echo "${{ toJson(steps.release-please.outputs) }}"
-        
-      - name: Download artifacts
+        run: echo "${{ toJson(steps.release-please.outputs) }}"
+
+      - name: Download WASM artifact
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
         uses: actions/download-artifact@v4
         with:
-          pattern: convert-*
-          path: lib/src/bin/
-          merge-multiple: true
-      
-      - name: Setup Node.js for NPM Publishing
+          name: wasm-build
+          path: lib/src/wasm/
+
+      - name: Setup Node.js
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-      
+
       - name: Enable Corepack and Setup Yarn
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
         run: |
           corepack enable
           corepack prepare yarn@3.6.1 --activate
-          yarn --version
-      
+
       - name: Publish to NPM
         if: ${{ steps.release-please.outputs.releases_created == 'true' }}
         run: |
           cd lib
           yarn install --immutable
           yarn build
-          rm -rf src/bin/
           yarn config set npmAuthToken ${NPM_AUTH_TOKEN}
           yarn npm publish --access public
         env:
