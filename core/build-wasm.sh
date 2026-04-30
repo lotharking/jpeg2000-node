@@ -37,6 +37,7 @@ else
 fi
 
 OPENJPEG_INCLUDE="$OPENJPEG_DIR/src/lib/openjp2"
+OPENJPEG_BUILD_INCLUDE="$OPENJPEG_DIR/build/src/lib/openjp2"
 OPENJPEG_LIB="$OPENJPEG_DIR/build/bin/libopenjp2.a"
 
 mkdir -p "$OUT_DIR"
@@ -44,6 +45,7 @@ mkdir -p "$OUT_DIR"
 echo "==> Compiling convert.c to WASM..."
 emcc "$SCRIPT_DIR/convert.c" \
   -I "$OPENJPEG_INCLUDE" \
+  -I "$OPENJPEG_BUILD_INCLUDE" \
   "$OPENJPEG_LIB" \
   -O3 \
   -s MODULARIZE=1 \

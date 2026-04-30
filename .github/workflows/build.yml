@@ -56,10 +56,12 @@ jobs:
       - name: Build WASM module
         run: |
           OPENJPEG_INCLUDE="openjpeg-wasm/src/lib/openjp2"
+          OPENJPEG_BUILD_INCLUDE="openjpeg-wasm/build/src/lib/openjp2"
           OPENJPEG_LIB="openjpeg-wasm/build/bin/libopenjp2.a"
           mkdir -p lib/src/wasm
           emcc core/convert.c \
             -I "$OPENJPEG_INCLUDE" \
+            -I "$OPENJPEG_BUILD_INCLUDE" \
             "$OPENJPEG_LIB" \
             -O3 \
             -s MODULARIZE=1 \
