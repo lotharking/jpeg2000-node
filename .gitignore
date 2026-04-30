@@ -5,3 +5,4 @@ target/
 .settings/
 convert
 output.jpg
+node_modules/
